@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Admin Dashboard</h2>
+<div class="metric-grid" id="metricGrid">
+  <div class="metric"><h4>Total Submissions</h4><div class="value" id="m-total">0</div><small>All time</small></div>
+  <div class="metric"><h4>Average Score</h4><div class="value" id="m-avg">-</div><small>Weighted</small></div>
+  <div class="metric"><h4>Channels</h4><div class="value" id="m-channels">0</div><small>Active</small></div>
+</div>
+<div class="card" style="margin-top:1.4rem;">
+  <h3 style="margin-top:0;font-size:1rem;letter-spacing:.5px;">Submissions</h3>
+  <div class="table-wrap">
+    <table id="subs"><thead><tr><th>ID</th><th>Channel</th><th>Location</th><th>Shopper</th><th>Visit</th><th>Scores</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+<script>
+const API_KEY = 'dev-admin-key'; // prototype only
+async function safeFetch(url){
+  const res = await fetch(url,{headers:{'X-API-Key':API_KEY}});
+  if(!res.ok){
+    const txt = await res.text();
+    throw new Error('Request failed '+res.status+': '+txt);
+  }
+  return res.json();
+}
+async function loadMetrics(){
+  const m = await safeFetch('/api/admin/metrics');
+  document.getElementById('m-total').textContent = m.total;
+  document.getElementById('m-avg').textContent = m.avg_score === null ? '-' : m.avg_score;
+  document.getElementById('m-channels').textContent = Object.keys(m.channel_breakdown || {}).length;
+}
+async function loadSubs(){
+  const subs = await safeFetch('/api/admin/submissions');
+  const tbody = document.querySelector('#subs tbody');
+  tbody.innerHTML = '';
+  subs.forEach(s => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${s.id}</td><td><span class='pill'>${s.channel}</span></td><td>${s.location_code}</td><td>${s.shopper_id}</td><td>${new Date(s.visit_datetime).toLocaleString()}</td><td>${s.scores.map(q=>q.question_id+':'+q.score).join(', ')}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function refresh(){ loadMetrics().catch(console.error); loadSubs().catch(console.error); }
+refresh();
+setInterval(refresh, 15000);
+</script>
+{% endblock %}

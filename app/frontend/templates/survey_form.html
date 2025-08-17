@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Submit Mystery Shopping Visit</h2>
+<div class="grid cols-2">
+  <div class="card" style="grid-column:1 / -1;">
+    <form id="surveyForm" class="survey">
+      <div class="grid cols-2">
+        <div class="label-row">
+          <label><span>Channel</span>
+            <select name="channel" required>
+              <option value="CALL_CENTER">Call Center</option>
+              <option value="ON_SITE">On Site</option>
+              <option value="WEB">Web</option>
+              <option value="MOBILE_APP">Mobile App</option>
+            </select>
+          </label>
+        </div>
+        <div class="label-row">
+          <label><span>Location Code</span>
+            <input type="text" name="location_code" placeholder="e.g., DXB-GOV-01" required>
+          </label>
+        </div>
+        <div class="label-row">
+          <label><span>Shopper ID</span>
+            <input type="text" name="shopper_id" placeholder="Your ID" required>
+          </label>
+        </div>
+        <div class="label-row">
+          <label><span>Visit Date/Time</span>
+            <input type="datetime-local" name="visit_datetime" required>
+          </label>
+        </div>
+      </div>
+      <fieldset>
+        <legend>Experience Scores</legend>
+        <div class="questions">
+          {% set qs = [
+            ('Q1','Greeting professionalism'),
+            ('Q2','Wait time satisfaction'),
+            ('Q3','Resolution effectiveness'),
+            ('Q4','Facility cleanliness'),
+            ('Q5','Overall experience')
+          ] %}
+          {% for qid, label in qs %}
+          <div class="q-card" data-q="{{ qid }}">
+            <div class="q-title"><span>{{ label }}</span><span class="badge">{{ qid }}</span></div>
+            <div class="stars" data-stars="{{ qid }}">
+              {% for s in [5,4,3,2,1] %}
+              <input id="{{ qid }}-{{ s }}" type="radio" name="{{ qid }}" value="{{ s }}" {% if s==5 %}checked{% endif %}>
+              <label for="{{ qid }}-{{ s }}">★</label>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </fieldset>
+      <div class="inline-actions">
+        <button type="submit">Submit</button>
+        <button type="button" class="secondary-btn" id="resetBtn">Reset</button>
+        <button type="button" class="secondary-btn" id="voiceBtn" aria-pressed="false">🎤 Voice Mode</button>
+        <button type="button" class="secondary-btn" id="langBtn" aria-pressed="false" title="Toggle Arabic/English">AR</button>
+      </div>
+      <div id="voiceStatus" style="font-size:.7rem; color:var(--text-dim);"></div>
+    </form>
+  </div>
+  <div class="card" style="grid-column:1 / -1;">
+    <h3 style="margin-top:0;font-size:.95rem;letter-spacing:.4px;">Submission Result</h3>
+    <div id="result">Fill the form and submit to see the JSON response.</div>
+  </div>
+</div>
+<script>
+(function(){
+  const form = document.getElementById('surveyForm');
+  const resultEl = document.getElementById('result');
+  const voiceBtn = document.getElementById('voiceBtn');
+  const langBtn = document.getElementById('langBtn');
+  const voiceStatus = document.getElementById('voiceStatus');
+  const questions = [
+    { id:'Q1', text_en:'Greeting professionalism', text_ar:'التحية والاحترافية' },
+    { id:'Q2', text_en:'Wait time satisfaction', text_ar:'الرضا عن وقت الانتظار' },
+    { id:'Q3', text_en:'Resolution effectiveness', text_ar:'فعالية الحل' },
+    { id:'Q4', text_en:'Facility cleanliness', text_ar:'نظافة المرفق' },
+    { id:'Q5', text_en:'Overall experience', text_ar:'التجربة بشكل عام' }
+  ];
+  document.getElementById('resetBtn').addEventListener('click', () => { form.reset(); resultEl.textContent = 'Form reset.'; });
+  form.visit_datetime.value = new Date().toISOString().slice(0,16);
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const payload = {
+      channel: data.get('channel'),
+      location_code: data.get('location_code'),
+      shopper_id: data.get('shopper_id'),
+      visit_datetime: new Date(data.get('visit_datetime')).toISOString(),
+      scores: questions.map(q => ({question_id: q.id, score: parseInt(data.get(q.id))})),
+      latency_samples: window.__latencySamplesSent || []
+    };
+    resultEl.textContent = 'Submitting...';
+    try { const res = await fetch('/api/survey/submit', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)}); const json = await res.json(); if(!res.ok) throw new Error(json.detail||'Error'); resultEl.textContent = JSON.stringify(json,null,2); resultEl.scrollIntoView({behavior:'smooth'}); } catch(err){ resultEl.textContent = 'Submission failed: '+err.message; }
+  });
+
+  // ---- Voice capture enhanced features ----
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition, active = false, qIndex = 0, awaitingConfirmation = false, pendingScore = null;
+  let currentLang = localStorage.getItem('voiceLang') || 'en';
+  if(currentLang==='ar') { langBtn.setAttribute('aria-pressed','true'); langBtn.textContent='EN'; }
+  const CONFIDENCE_THRESHOLD = 0.6;
+
+  // Latency metrics
+  const latencySamples = []; // {qId, ms}
+  let questionStartTime = null;
+
+  // Persist language toggle
+  langBtn.addEventListener('click', () => {
+    currentLang = currentLang === 'en' ? 'ar' : 'en';
+    localStorage.setItem('voiceLang', currentLang);
+    langBtn.setAttribute('aria-pressed', currentLang==='ar');
+    langBtn.textContent = currentLang==='ar' ? 'EN' : 'AR';
+    announce('Language: '+ (currentLang==='ar'?'Arabic':'English'));
+  });
+
+  if(SpeechRecognition){
+    recognition = new SpeechRecognition();
+    recognition.lang = currentLang==='ar' ? 'ar-SA':'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = (e) => { handleSpeechResult(e); };
+    recognition.onerror = (e) => { announce('Speech error: '+ e.error); if(active) restart(); };
+    recognition.onend = () => { if(active) restart(); };
+  } else { voiceBtn.disabled = true; voiceBtn.textContent = 'Voice Unsupported'; }
+
+  function handleSpeechResult(e){
+    const res = e.results[0][0];
+    const transcriptRaw = res.transcript || '';
+    const confidence = res.confidence || 0;
+    const transcript = transcriptRaw.trim().toLowerCase();
+
+    // Wake word detection when inactive (simple stub)
+    if(!active){
+      if(isWakeWord(transcript)) { startVoice(); return; }
+      return; // ignore others
+    }
+
+    const cmd = parseCommand(transcript);
+    if(cmd){ handleCommand(cmd); return; }
+
+    if(awaitingConfirmation){
+      if(isYes(transcript)){ finalizePending(); }
+      else if(isNo(transcript)){ pendingScore=null; awaitingConfirmation=false; askCurrent(); }
+      else { confirmRepeat(); }
+      return;
+    }
+
+    const parsedScore = parseSpokenScore(transcript);
+    if(parsedScore){
+      if(confidence < CONFIDENCE_THRESHOLD){ pendingScore = parsedScore; awaitingConfirmation = true; confirmPending(); }
+      else { recordScore(parsedScore); }
+    } else {
+      announce(currentLang==='ar'? 'لم ألتقط رقماً. قل رقم من 1 إلى 5.' : 'Did not catch a number. Say a number from 1 to 5.');
+      askCurrent();
+    }
+  }
+
+  // Wake word stub
+  function isWakeWord(t){
+    return ['start survey','begin survey','ابدأ','ابدأ التقييم'].some(w=>t.includes(w));
+  }
+
+  function parseSpokenScore(t){
+    const norm = t.replace(/\s+/g,' ').trim();
+    // Arabic ordinal/cardinal variants
+    const map = {
+      'one':1,'1':1,'first':1,
+      'two':2,'2':2,'second':2,
+      'three':3,'3':3,'third':3,
+      'four':4,'for':4,'4':4,'fourth':4,
+      'five':5,'5':5,'fifth':5,
+      // Arabic cardinals & ordinals/speech variants
+      'واحد':1,'الأول':1,'اول':1,'١':1,
+      'اثنان':2,'اثنين':2,'الثاني':2,'٢':2,
+      'ثلاثة':3,'الثالث':3,'٣':3,
+      'اربعة':4,'أربعة':4,'الرابع':4,'٤':4,
+      'خمسة':5,'الخامس':5,'٥':5
+    };
+    if(map[norm]!==undefined) return map[norm];
+    for(const key in map){ if(norm.includes(key)) return map[key]; }
+    return null;
+  }
+  function isYes(t){ return ['yes','yeah','yep','correct','right','نعم','ايه','أجل'].some(w=>t.includes(w)); }
+  function isNo(t){ return ['no','nope','nah','incorrect','wrong','لا'].some(w=>t.includes(w)); }
+
+  function parseCommand(t){
+    if(['repeat','again','أعد','كرر'].some(w=>t.includes(w))) return {type:'repeat'};
+    if(['undo','تراجع','رجوع'].some(w=>t.includes(w))) return {type:'undo'};
+    if(['skip','تخطي','التالي'].some(w=>t.includes(w))) return {type:'skip'};
+    const m = t.match(/change question (\d+)/) || t.match(/سؤال\s*(\d+)/);
+    if(m) return {type:'jump', index: parseInt(m[1],10)-1};
+    return null;
+  }
+  function handleCommand(cmd){
+    if(cmd.type==='repeat'){ announce(currentLang==='ar'? 'إعادة السؤال.' : 'Repeating question.'); askCurrent(true); }
+    if(cmd.type==='jump'){
+      if(cmd.index>=0 && cmd.index < questions.length){ qIndex = cmd.index; announce(currentLang==='ar'? 'تغيير إلى سؤال '+ (qIndex+1) : 'Changing to question '+(qIndex+1)); askCurrent(true); }
+      else { announce('Invalid question number'); askCurrent(true); }
+    }
+    if(cmd.type==='undo'){
+      if(qIndex===0){ announce(currentLang==='ar'? 'لا يوجد شيء للتراجع.' : 'Nothing to undo.'); askCurrent(true); return; }
+      // Move back one question
+      qIndex = Math.max(0, qIndex - 1);
+      announce(currentLang==='ar'? 'تم التراجع. سؤال '+(qIndex+1) : 'Undone. Question '+(qIndex+1));
+      askCurrent(true);
+    }
+    if(cmd.type==='skip'){
+      announce(currentLang==='ar'? 'تخطي السؤال.' : 'Skipping question.');
+      qIndex++;
+      if(qIndex < questions.length){ askCurrent(true); } else { stopVoice(); announce(currentLang==='ar'? 'انتهت الأسئلة. راجع ثم أرسل.' : 'No more questions. Review then submit.'); }
+    }
+  }
+
+  function recordScore(score){
+    setScore(questions[qIndex].id, score);
+    // latency measurement end
+    if(questionStartTime){
+      const ms = performance.now() - questionStartTime;
+      latencySamples.push({qId: questions[qIndex].id, ms});
+      questionStartTime = null;
+      updateLatencyDisplay();
+    }
+    announce((currentLang==='ar'?'سجلت':'Recorded') + ' '+score);
+    qIndex++;
+    if(qIndex < questions.length){ askCurrent(); } else { stopVoice(); announce(currentLang==='ar'? 'اكتملت جميع الدرجات. راجع ثم أرسل.' : 'All scores captured. Review and submit.'); }
+  }
+  function finalizePending(){ recordScore(pendingScore); pendingScore=null; awaitingConfirmation=false; }
+  function confirmPending(){ speakAndBeep(currentLang==='ar'? `قلت ${pendingScore}؟ قل نعم أو لا.` : `You said ${pendingScore}. Say yes or no.`); announce(currentLang==='ar'? `تأكيد: ${pendingScore}`: `Confirm: ${pendingScore}`); }
+  function confirmRepeat(){ speakAndBeep(currentLang==='ar'? 'لم أفهم. قل نعم لتأكيد الرقم أو لا لإعادته.' : 'Did not understand. Say yes to confirm or no to retry.'); }
+
+  function setScore(qid, score){ const radio = document.querySelector(`input[name="${qid}"][value="${score}"]`); if(radio) radio.checked = true; }
+  function askCurrent(force){ if(!active) return; pendingScore=null; awaitingConfirmation=false; const q = questions[qIndex]; const text = currentLang==='ar'? `السؤال ${qIndex+1}. ${q.text_ar}. قل رقم من 1 إلى 5.` : `Question ${qIndex+1}. ${q.text_en}. Say a number from 1 to 5.`; questionStartTime = performance.now(); speakAndBeep(text, force); }
+
+  // TTS + beep
+  function speakAndBeep(text, force){ if(!('speechSynthesis' in window)){ announce(text); return restart(); } if(force){ cancelSpeech(); }
+    beep(170,110); const utter = new SpeechSynthesisUtterance(text); utter.lang = currentLang==='ar'? 'ar-SA':'en-US'; utter.rate=1; utter.onend = () => { restart(); }; speechSynthesis.speak(utter); }
+  function cancelSpeech(){ try { speechSynthesis.cancel(); } catch(_){} }
+  function beep(freq=200, duration=100){ try { const ctx = new (window.AudioContext||window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.type='sine'; osc.frequency.value=freq; osc.connect(gain); gain.connect(ctx.destination); gain.gain.setValueAtTime(0.15, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + duration/1000); } catch(_){} }
+
+  function restart(){ try { recognition.stop(); } catch(_){} try { recognition.lang = currentLang==='ar' ? 'ar-SA' : 'en-US'; recognition.start(); } catch(_){} }
+  function announce(msg){ voiceStatus.textContent = msg; }
+  function stopVoice(){ active=false; voiceBtn.setAttribute('aria-pressed','false'); try { recognition.stop(); } catch(_){} cancelSpeech(); }
+
+  // Latency visualization (simple average)
+  function updateLatencyDisplay(){
+    if(!latencySamples.length) return;
+    const avg = (latencySamples.reduce((a,b)=>a+b.ms,0)/latencySamples.length).toFixed(0);
+    const last = latencySamples[latencySamples.length-1];
+    const label = currentLang==='ar'? 'متوسط الزمن' : 'Avg latency';
+    voiceStatus.textContent = `${voiceStatus.textContent.split('|')[0]} | ${label}: ${avg}ms (Q${latencySamples.length}=${last.ms.toFixed(0)}ms)`;
+  }
+
+  function startVoice(){ if(!recognition) return; if(active) return; active=true; voiceBtn.setAttribute('aria-pressed','true'); qIndex=0; latencySamples.length=0; speakAndBeep(currentLang==='ar'? 'بدء الوضع الصوتي.' : 'Starting voice mode.'); setTimeout(()=>askCurrent(true), 650); }
+
+  voiceBtn.addEventListener('click', () => { if(!recognition) return; if(active){ stopVoice(); announce(currentLang==='ar'? 'تم إيقاف الوضع الصوتي.' : 'Voice mode stopped.'); } else { startVoice(); } });
+
+  // --- Wake-word engine integration (WASM scaffold) ---
+  // Replace this stub with actual WASM model loader (e.g., Porcupine / Vosk or custom small CNN)
+  let wakeEngineReady = false;
+  let audioCtx, analyser, micSrc;
+  const WAVE_BARS = 32;
+  const canvas = document.createElement('canvas');
+  canvas.width = 300; canvas.height = 40; canvas.style.width='100%'; canvas.style.marginTop='6px';
+  canvas.setAttribute('aria-hidden','true');
+  voiceStatus.parentElement.appendChild(canvas);
+  const cctx = canvas.getContext('2d');
+
+  async function initWakeEngine(){
+    if(!navigator.mediaDevices) return;
+    try {
+      audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+      micSrc = audioCtx.createMediaStreamSource(stream);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 2048;
+      micSrc.connect(analyser);
+      wakeEngineReady = true;
+      animateVU();
+      // Placeholder: In real impl, feed audio chunks to WASM wake-word detector; on detection call startVoice();
+    } catch(e){ console.warn('Wake engine init failed', e); }
+  }
+  function animateVU(){
+    if(!analyser) return;
+    requestAnimationFrame(animateVU);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteTimeDomainData(data);
+    cctx.clearRect(0,0,canvas.width,canvas.height);
+    cctx.fillStyle = 'var(--bg-alt)'; cctx.fillRect(0,0,canvas.width,canvas.height);
+    const step = Math.floor(data.length / WAVE_BARS);
+    for(let i=0;i<WAVE_BARS;i++){
+      const v = (data[i*step]-128)/128; // -1..1
+      const h = Math.max(2, Math.abs(v)*canvas.height);
+      const x = (i/WAVE_BARS)*canvas.width;
+      cctx.fillStyle = active? 'var(--accent)': 'var(--border)';
+      cctx.fillRect(x, (canvas.height-h)/2, canvas.width/WAVE_BARS - 2, h);
+    }
+  }
+  initWakeEngine();
+
+  // Expose latency samples for submission payload
+  window.__latencySamplesSent = latencySamples;
+})();
+</script>
+{% endblock %}

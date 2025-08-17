@@ -1,0 +1,35 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.build/
+dist/
+build/
+.cache/
+*.log
+
+# Environments
+.env
+.env.*
+venv/
+.venv/
+
+# VS Code
+.vscode/
+.history/
+
+# OS / Misc
+.DS_Store
+Thumbs.db
+
+# Coverage / testing
+htmlcov/
+.coverage*
+.pytest_cache/
+
+# Frontend build (if added later)
+node_modules/
+*.map
+dist/
