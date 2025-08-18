@@ -102,6 +102,7 @@
   // ---- Voice capture enhanced features ----
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   let recognition, active = false, qIndex = 0, awaitingConfirmation = false, pendingScore = null;
+  let recognitionPaused = false; // we pause while TTS is speaking to avoid picking up our own voice output
   let currentLang = localStorage.getItem('voiceLang') || 'en';
   if(currentLang==='ar') { langBtn.setAttribute('aria-pressed','true'); langBtn.textContent='EN'; }
   const CONFIDENCE_THRESHOLD = 0.6;
@@ -122,17 +123,26 @@
   if(SpeechRecognition){
     recognition = new SpeechRecognition();
     recognition.lang = currentLang==='ar' ? 'ar-SA':'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    recognition.interimResults = true; // capture digits earlier
+    recognition.continuous = true;     // avoid stop/start gaps
+    recognition.maxAlternatives = 3;
     recognition.onresult = (e) => { handleSpeechResult(e); };
-    recognition.onerror = (e) => { announce('Speech error: '+ e.error); if(active) restart(); };
-    recognition.onend = () => { if(active) restart(); };
+    recognition.onerror = (e) => { announce('Speech error: '+ e.error); /* keep running unless fatal */ }; 
+    recognition.onend = () => { // Only auto-restart if we did not intentionally pause
+      if(active && !recognitionPaused){ try { recognition.start(); } catch(_){} }
+    };
   } else { voiceBtn.disabled = true; voiceBtn.textContent = 'Voice Unsupported'; }
 
+  function latestResult(e){
+    // Find the most recent result (final or interim)
+    return e.results[e.results.length - 1];
+  }
   function handleSpeechResult(e){
-    const res = e.results[0][0];
-    const transcriptRaw = res.transcript || '';
-    const confidence = res.confidence || 0;
+    if(recognitionPaused) return; // ignore while TTS speaking
+    const lr = latestResult(e);
+    const alt = lr[0];
+    const transcriptRaw = (alt && alt.transcript) || '';
+    const confidence = (alt && alt.confidence) || 0;
     const transcript = transcriptRaw.trim().toLowerCase();
 
     // Wake word detection when inactive (simple stub)
@@ -153,11 +163,13 @@
 
     const parsedScore = parseSpokenScore(transcript);
     if(parsedScore){
+      // If interim and confidence low, wait for final before asking confirmation
+      if(!lr.isFinal && confidence < CONFIDENCE_THRESHOLD) return; 
       if(confidence < CONFIDENCE_THRESHOLD){ pendingScore = parsedScore; awaitingConfirmation = true; confirmPending(); }
       else { recordScore(parsedScore); }
     } else {
-      announce(currentLang==='ar'? 'لم ألتقط رقماً. قل رقم من 1 إلى 5.' : 'Did not catch a number. Say a number from 1 to 5.');
-      askCurrent();
+      // Only nudge on final results to reduce noise
+      if(lr.isFinal){ announce(currentLang==='ar'? 'لم ألتقط رقماً. قل رقم من 1 إلى 5.' : 'Did not catch a number. Say a number from 1 to 5.'); }
     }
   }
 
@@ -238,12 +250,29 @@
   function askCurrent(force){ if(!active) return; pendingScore=null; awaitingConfirmation=false; const q = questions[qIndex]; const text = currentLang==='ar'? `السؤال ${qIndex+1}. ${q.text_ar}. قل رقم من 1 إلى 5.` : `Question ${qIndex+1}. ${q.text_en}. Say a number from 1 to 5.`; questionStartTime = performance.now(); speakAndBeep(text, force); }
 
   // TTS + beep
-  function speakAndBeep(text, force){ if(!('speechSynthesis' in window)){ announce(text); return restart(); } if(force){ cancelSpeech(); }
-    beep(170,110); const utter = new SpeechSynthesisUtterance(text); utter.lang = currentLang==='ar'? 'ar-SA':'en-US'; utter.rate=1; utter.onend = () => { restart(); }; speechSynthesis.speak(utter); }
+  function speakAndBeep(text, force){ 
+    if(!('speechSynthesis' in window)){ announce(text); return; }
+    if(force){ cancelSpeech(); }
+    pauseRecognition();
+    beep(300,80);
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = currentLang==='ar'? 'ar-SA':'en-US';
+    utter.rate = 1;
+    utter.onend = () => { resumeRecognition(); };
+    speechSynthesis.speak(utter);
+  }
   function cancelSpeech(){ try { speechSynthesis.cancel(); } catch(_){} }
-  function beep(freq=200, duration=100){ try { const ctx = new (window.AudioContext||window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.type='sine'; osc.frequency.value=freq; osc.connect(gain); gain.connect(ctx.destination); gain.gain.setValueAtTime(0.15, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + duration/1000); } catch(_){} }
+  // Reuse a single AudioContext to avoid repeated init latency on some browsers
+  const BeepCtx = (function(){ try { return new (window.AudioContext||window.webkitAudioContext)(); } catch(_) { return null; } })();
+  function beep(freq=250, duration=60){
+    try { if(!BeepCtx) return; const osc = BeepCtx.createOscillator(); const gain = BeepCtx.createGain(); osc.type='sine'; osc.frequency.value=freq; osc.connect(gain); gain.connect(BeepCtx.destination); gain.gain.setValueAtTime(0.18, BeepCtx.currentTime); osc.start(); osc.stop(BeepCtx.currentTime + duration/1000); } catch(_){}
+  }
 
-  function restart(){ try { recognition.stop(); } catch(_){} try { recognition.lang = currentLang==='ar' ? 'ar-SA' : 'en-US'; recognition.start(); } catch(_){} }
+  function pauseRecognition(){ if(!recognition) return; recognitionPaused = true; try { recognition.stop(); } catch(_){} }
+  function resumeRecognition(){ if(!recognition) return; recognitionPaused = false; try { recognition.lang = currentLang==='ar' ? 'ar-SA' : 'en-US'; recognition.start(); } catch(_){} }
+  function restart(){ // legacy no-op now that we use continuous mode
+    if(!recognitionPaused) resumeRecognition();
+  }
   function announce(msg){ voiceStatus.textContent = msg; }
   function stopVoice(){ active=false; voiceBtn.setAttribute('aria-pressed','false'); try { recognition.stop(); } catch(_){} cancelSpeech(); }
 
@@ -256,7 +285,7 @@
     voiceStatus.textContent = `${voiceStatus.textContent.split('|')[0]} | ${label}: ${avg}ms (Q${latencySamples.length}=${last.ms.toFixed(0)}ms)`;
   }
 
-  function startVoice(){ if(!recognition) return; if(active) return; active=true; voiceBtn.setAttribute('aria-pressed','true'); qIndex=0; latencySamples.length=0; speakAndBeep(currentLang==='ar'? 'بدء الوضع الصوتي.' : 'Starting voice mode.'); setTimeout(()=>askCurrent(true), 650); }
+  function startVoice(){ if(!recognition) return; if(active) return; active=true; voiceBtn.setAttribute('aria-pressed','true'); qIndex=0; latencySamples.length=0; resumeRecognition(); speakAndBeep(currentLang==='ar'? 'بدء الوضع الصوتي.' : 'Starting voice mode.'); setTimeout(()=>askCurrent(true), 250); }
 
   voiceBtn.addEventListener('click', () => { if(!recognition) return; if(active){ stopVoice(); announce(currentLang==='ar'? 'تم إيقاف الوضع الصوتي.' : 'Voice mode stopped.'); } else { startVoice(); } });
 
