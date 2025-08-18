@@ -18,7 +18,8 @@
       <a href="/admin" id="nav-admin">Admin</a>
     </nav>
     <div style="margin-left:auto; display:flex; gap:.6rem; align-items:center;">
-      <button class="toggle-theme" onclick="toggleTheme()">Theme</button>
+      <button class="toggle-theme" onclick="toggleTheme()" id="themeBtn" type="button">Theme</button>
+      <button id="dbgToggle" class="toggle-theme" type="button" aria-pressed="false" title="Toggle transcript overlay (Ctrl+D)">Debug</button>
     </div>
   </header>
   <main class="fade-in">
@@ -37,5 +38,50 @@
     if(path === '/' || path.startsWith('/?')) document.getElementById('nav-submit').classList.add('active');
     if(path.startsWith('/admin')) document.getElementById('nav-admin').classList.add('active');
   </script>
+  <script>
+    // Debug overlay toggle with persistent state & keyboard shortcut
+    (function(){
+      const dbgBtn = document.getElementById('dbgToggle');
+      if(!dbgBtn) return;
+      function applyState(to){
+        dbgBtn.setAttribute('aria-pressed', to?'true':'false');
+        dbgBtn.classList.toggle('active', to);
+        dbgBtn.textContent = to? 'Debug On':'Debug';
+      }
+      // Initial state from localStorage
+      const saved = localStorage.getItem('voiceDebugVisible') === '1';
+      applyState(saved);
+      dbgBtn.addEventListener('click', ()=>{
+        const next = dbgBtn.getAttribute('aria-pressed') !== 'true';
+        // Persist desired state BEFORE notifying listeners
+        localStorage.setItem('voiceDebugVisible', next ? '1':'0');
+        applyState(next);
+        window.dispatchEvent(new CustomEvent('toggle-transcript-debug'));
+      });
+      // Keyboard shortcut Ctrl+D (avoid overriding browser bookmark on Mac so use Ctrl+Shift+D alternative there)
+      window.addEventListener('keydown', (e)=>{
+        if((e.ctrlKey && e.key.toLowerCase()==='d') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='d')){
+          if(e.target && (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA' || e.target.isContentEditable)) return;
+          e.preventDefault(); dbgBtn.click();
+        }
+      });
+      // Sync if toggled elsewhere
+      window.addEventListener('toggle-transcript-debug', ()=>{
+        const visible = localStorage.getItem('voiceDebugVisible') === '1';
+        applyState(visible);
+      });
+    })();
+  </script>
+  <!-- Optional Vosk WASM bundle (place vosk.js in vosk-model directory). Will be skipped if missing. -->
+  <script>
+    (function(){
+      const s = document.createElement('script');
+      s.src = '/static/vosk-model/vosk.js';
+      s.onload = ()=>console.log('[VOSK] wasm bundle loaded');
+      s.onerror = ()=>console.log('[VOSK] vosk.js not found (offline ASR disabled)');
+      document.currentScript.parentNode.insertBefore(s, document.currentScript);
+    })();
+  </script>
+  <script src="/static/vosk_loader.js"></script>
 </body>
 </html>

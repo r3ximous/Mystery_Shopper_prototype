@@ -6,6 +6,11 @@ __pycache__/
 *.egg-info/
 .build/
 dist/
+
+# Speech / ASR models (do not commit large binary model files)
+app/frontend/static/vosk-model/*
+!app/frontend/static/vosk-model/README.txt
+!app/frontend/static/vosk-model/.keep
 build/
 .cache/
 *.log

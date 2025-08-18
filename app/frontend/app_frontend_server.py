@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.backend.main import app as api_app
+from app.backend.core.questions import get_questions
 import os, sys
 
 frontend = FastAPI(title="Mystery Shopper Frontend")
@@ -26,7 +27,7 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 @frontend.get("/", response_class=HTMLResponse)
 async def survey_page(request: Request):
-    return templates.TemplateResponse("survey_form.html", {"request": request})
+    return templates.TemplateResponse("survey_form.html", {"request": request, "questions": get_questions()})
 
 @frontend.get("/admin", response_class=HTMLResponse)
 async def admin_page(request: Request):
