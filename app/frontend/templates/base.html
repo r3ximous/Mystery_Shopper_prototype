@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mystery Shopper Portal</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script>
+    const storedTheme = localStorage.getItem('theme');
+    if(storedTheme === 'light'){ document.documentElement.classList.add('light'); }
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Mystery Shopper</h1>
+    <nav>
+      <a href="/" id="nav-submit">Submit Visit</a>
+      <a href="/admin" id="nav-admin">Admin</a>
+    </nav>
+    <div style="margin-left:auto; display:flex; gap:.6rem; align-items:center;">
+      <button class="toggle-theme" onclick="toggleTheme()" id="themeBtn" type="button">Theme</button>
+      <button id="dbgToggle" class="toggle-theme" type="button" aria-pressed="false" title="Toggle transcript overlay (Ctrl+D)">Debug</button>
+    </div>
+  </header>
+  <main class="fade-in">
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <small>&copy; 2025 UAE Gov Prototype • v0.1</small>
+  </footer>
+  <script>
+    function toggleTheme(){
+      document.documentElement.classList.toggle('light');
+      localStorage.setItem('theme', document.documentElement.classList.contains('light') ? 'light':'dark');
+    }
+    // active nav
+    const path = window.location.pathname;
+    if(path === '/' || path.startsWith('/?')) document.getElementById('nav-submit').classList.add('active');
+    if(path.startsWith('/admin')) document.getElementById('nav-admin').classList.add('active');
+  </script>
+  <script>
+    // Debug overlay toggle with persistent state & keyboard shortcut
+    (function(){
+      const dbgBtn = document.getElementById('dbgToggle');
+      if(!dbgBtn) return;
+      function applyState(to){
+        dbgBtn.setAttribute('aria-pressed', to?'true':'false');
+        dbgBtn.classList.toggle('active', to);
+        dbgBtn.textContent = to? 'Debug On':'Debug';
+      }
+      // Initial state from localStorage
+      const saved = localStorage.getItem('voiceDebugVisible') === '1';
+      applyState(saved);
+      dbgBtn.addEventListener('click', ()=>{
+        const next = dbgBtn.getAttribute('aria-pressed') !== 'true';
+        // Persist desired state BEFORE notifying listeners
+        localStorage.setItem('voiceDebugVisible', next ? '1':'0');
+        applyState(next);
+        window.dispatchEvent(new CustomEvent('toggle-transcript-debug'));
+      });
+      // Keyboard shortcut Ctrl+D (avoid overriding browser bookmark on Mac so use Ctrl+Shift+D alternative there)
+      window.addEventListener('keydown', (e)=>{
+        if((e.ctrlKey && e.key.toLowerCase()==='d') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='d')){
+          if(e.target && (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA' || e.target.isContentEditable)) return;
+          e.preventDefault(); dbgBtn.click();
+        }
+      });
+      // Sync if toggled elsewhere
+      window.addEventListener('toggle-transcript-debug', ()=>{
+        const visible = localStorage.getItem('voiceDebugVisible') === '1';
+        applyState(visible);
+      });
+    })();
+  </script>
+  <!-- Optional Vosk WASM bundle (place vosk.js in vosk-model directory). Will be skipped if missing. -->
+  <script>
+    (function(){
+      const s = document.createElement('script');
+      s.src = '/static/vosk-model/vosk.js';
+      s.onload = ()=>console.log('[VOSK] wasm bundle loaded');
+      s.onerror = ()=>console.log('[VOSK] vosk.js not found (offline ASR disabled)');
+      document.currentScript.parentNode.insertBefore(s, document.currentScript);
+    })();
+  </script>
+  <script src="/static/vosk_loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Submit Mystery Shopping Visit</h2>
+<div class="grid cols-2">
+  <div class="card" style="grid-column:1 / -1;">
+    <form id="surveyForm" class="survey">
+      <div class="grid cols-2">
+        <div class="label-row">
+          <label><span>Channel</span>
+            <select name="channel" required>
+              <option value="CALL_CENTER">Call Center</option>
+              <option value="ON_SITE">On Site</option>
+              <option value="WEB">Web</option>
+              <option value="MOBILE_APP">Mobile App</option>
+            </select>
+          </label>
+        </div>
+        <div class="label-row">
+          <label><span>Location Code</span>
+            <input type="text" name="location_code" placeholder="e.g., DXB-GOV-01" required maxlength="20" />
+          </label>
+        </div>
+        <div class="label-row">
+          <label><span>Shopper ID</span>
+            <input type="text" name="shopper_id" placeholder="Your ID" required maxlength="20" />
+          </label>
+        </div>
+        <div class="label-row">
+          <label><span>Visit Date/Time</span>
+            <input type="datetime-local" name="visit_datetime" required />
+          </label>
+        </div>
+      </div>
+      <fieldset>
+        <legend>Experience Scores</legend>
+        <div class="questions">
+          {% for q in questions %}
+          <div class="q-card" data-q="{{ q.id }}">
+            <div class="q-title">
+              <span>{{ q.text_en|upper }}</span>
+              <span class="badge">{{ q.id }}</span>
+            </div>
+            <div class="stars">
+              {# Render radios high -> low so row-reverse shows ascending left->right #}
+              {% for i in range(5,0,-1) %}
+                <input id="{{ q.id }}_{{ i }}" type="radio" name="{{ q.id }}" value="{{ i }}" required />
+                <label for="{{ q.id }}_{{ i }}" title="{{ q.text_en }}: {{ i }} star{{ 's' if i>1 }}">★</label>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </fieldset>
+      <div class="inline-actions voice-block" style="margin-top:.5rem;">
+        <div class="voice-controls">
+          <button type="submit">Submit</button>
+          <button type="reset" id="resetBtn" class="secondary-btn">Reset</button>
+          <button type="button" id="voiceBtn" data-mode="off" class="secondary-btn">Voice Mode</button>
+          <button type="button" id="langBtn" aria-pressed="false" class="secondary-btn" title="Toggle Arabic">AR</button>
+          <button type="button" id="offlineBtn" aria-pressed="false" disabled title="Offline ASR loading..." class="secondary-btn">Offline</button>
+          <button type="button" id="asrRetryBtn" style="display:none;" class="secondary-btn">Retry</button>
+          <span id="asrSpinner" class="spinner" aria-hidden="true"></span>
+          <span id="cpuLoad" class="cpu-load" style="display:none;"></span>
+        </div>
+        <div class="voice-status-group">
+          <div class="status-line">
+            <span id="voiceStatus" class="voice-status" aria-live="polite">Voice idle</span>
+            <span id="voiceProgress" class="voice-progress"></span>
+            <span id="latencyStats" class="voice-progress"></span>
+          </div>
+          <div class="partials-line" style="display:none;"></div>
+        </div>
+      </div>
+    </form>
+    <pre id="result" class="result-box" style="margin-top:1rem; max-height:200px; overflow:auto;"></pre>
+  </div>
+</div>
+<script>
+// Inject survey questions from backend
+window.__SURVEY_QUESTIONS = JSON.parse(decodeURIComponent("{{ questions|tojson|urlencode }}"));
+</script>
+<script type="module" src="/static/js/survey_main.js"></script>
+{% endblock %}
