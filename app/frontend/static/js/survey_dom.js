@@ -62,7 +62,7 @@ function ensurePanel(){
   if(document.getElementById('dbgPanel')) return;
   const panel = document.createElement('div');
   panel.id='dbgPanel';
-  panel.style.cssText='margin-top:1rem;border:1px solid var(--border);background:#101418;padding:.6rem .7rem;border-radius:6px;max-height:180px;overflow:auto;font:11px/1.35 monospace;display:none;';
+  panel.style.cssText='margin-top:1rem;border:1px solid var(--border);background:var(--card);padding:.6rem .7rem;border-radius:6px;max-height:180px;overflow:auto;font:11px/1.35 monospace;display:none;';
   panel.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;"> <strong style="font-size:.65rem;letter-spacing:.8px;">TRANSCRIPTS</strong><div style="display:flex;gap:.4rem;align-items:center;font-size:.55rem;"> <span id="dbgCount" style="color:var(--text-dim);"></span> <button type="button" id="dbgClear" style="background:#232a33;padding:2px 6px;font-size:.55rem;border-radius:4px;">Clear</button></div></div><hr style="border:0;border-top:1px solid var(--border);margin:.4rem 0 .5rem"/><div id="dbgLines"></div>';
   const result = document.getElementById('result');
   if(result && result.parentElement){ result.parentElement.appendChild(panel); }
