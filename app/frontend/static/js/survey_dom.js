@@ -10,12 +10,6 @@ window.addEventListener('toggle-transcript-debug', () => { if(!DISABLE_TRANSCRIP
 export function setupDOM(){
   const voiceStatus = document.getElementById('voiceStatus');
   // create partial containers if not present
-  if(!document.getElementById('offlinePartial')){
-    const offlinePartial = document.createElement('div');
-    offlinePartial.id='offlinePartial';
-    offlinePartial.className='voice-partial offline';
-    voiceStatus.parentElement.appendChild(offlinePartial);
-  }
   if(!document.getElementById('onlinePartial')){
     const onlinePartial = document.createElement('div');
     onlinePartial.id='onlinePartial';

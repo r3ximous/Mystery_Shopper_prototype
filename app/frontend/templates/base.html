@@ -72,16 +72,5 @@
       });
     })();
   </script>
-  <!-- Optional Vosk WASM bundle (place vosk.js in vosk-model directory). Will be skipped if missing. -->
-  <script>
-    (function(){
-      const s = document.createElement('script');
-      s.src = '/static/vosk-model/vosk.js';
-      s.onload = ()=>console.log('[VOSK] wasm bundle loaded');
-      s.onerror = ()=>console.log('[VOSK] vosk.js not found (offline ASR disabled)');
-      document.currentScript.parentNode.insertBefore(s, document.currentScript);
-    })();
-  </script>
-  <script src="/static/vosk_loader.js"></script>
 </body>
 </html>
