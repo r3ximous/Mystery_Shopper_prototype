@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Submit Mystery Shopping Visit</h2>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+  <h2>Submit Mystery Shopping Visit</h2>
+  <div style="display: flex; gap: 0.5rem; align-items: center;">
+    <span style="font-size: 0.8rem; color: var(--text-dim);">Language:</span>
+    <select id="languageSelect" onchange="switchLanguage(this.value)" style="padding: 0.3rem 0.5rem; font-size: 0.8rem;">
+      <option value="en" {{ 'selected' if language == 'en' else '' }}>English</option>
+      <option value="ar" {{ 'selected' if language == 'ar' else '' }}>العربية</option>
+    </select>
+  </div>
+</div>
+
 <div class="grid cols-2">
   <div class="card" style="grid-column:1 / -1;">
     <form id="surveyForm" class="survey">
@@ -31,13 +41,16 @@
           </label>
         </div>
       </div>
+      
       <fieldset>
-        <legend>Experience Scores</legend>
+        <legend id="scoresLegend">Experience Scores</legend>
         <div class="questions">
           {% for q in questions %}
-          <div class="q-card" data-q="{{ q.id }}">
+          <div class="q-card" data-q="{{ q.id }}" data-weight="{{ q.weight }}">
             <div class="q-title">
-              <span>{{ q.text_en|upper }}</span>
+              <span class="question-text" data-en="{{ q.text_en }}" data-ar="{{ q.text_ar or q.text_en }}">
+                {% if language == 'ar' and q.text_ar %}{{ q.text_ar }}{% else %}{{ q.text_en|upper }}{% endif %}
+              </span>
               <span class="badge">{{ q.id }}</span>
             </div>
             <div class="stars">
@@ -47,10 +60,14 @@
                 <label for="{{ q.id }}_{{ i }}" title="{{ q.text_en }}: {{ i }} star{{ 's' if i>1 }}">★</label>
               {% endfor %}
             </div>
+            {% if q.weight != 1.0 %}
+            <div class="weight-indicator">Weight: {{ q.weight }}x</div>
+            {% endif %}
           </div>
           {% endfor %}
         </div>
       </fieldset>
+      
       <div class="inline-actions voice-block" style="margin-top:.5rem;">
         <div class="voice-controls">
           <button type="submit">Submit</button>
@@ -73,9 +90,92 @@
     <pre id="result" class="result-box" style="margin-top:1rem; max-height:200px; overflow:auto;"></pre>
   </div>
 </div>
+
+<style>
+.weight-indicator {
+  font-size: 0.6rem;
+  color: var(--accent);
+  text-align: center;
+  margin-top: 0.25rem;
+  font-weight: 600;
+}
+
+.question-text {
+  transition: all 0.3s ease;
+}
+
+[dir="rtl"] .q-card {
+  text-align: right;
+}
+
+[dir="rtl"] .stars {
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+/* Language-specific styling */
+.lang-ar {
+  direction: rtl;
+  text-align: right;
+}
+
+.lang-ar .question-text {
+  font-family: 'Arial', sans-serif;
+}
+</style>
+
 <script>
-// Inject survey questions from backend
+// Global language state
+let currentLanguage = '{{ language }}';
+
+// Inject survey questions from backend (backward compatibility)
 window.__SURVEY_QUESTIONS = JSON.parse(decodeURIComponent("{{ questions|tojson|urlencode }}"));
+
+function switchLanguage(newLang) {
+  if (newLang === currentLanguage) return;
+  
+  // Update URL and reload with new language
+  const url = new URL(window.location);
+  url.searchParams.set('lang', newLang);
+  window.location.href = url.toString();
+}
+
+// Update question text based on current language
+function updateQuestionTexts() {
+  const isArabic = currentLanguage === 'ar';
+  
+  document.querySelectorAll('.question-text').forEach(element => {
+    const enText = element.getAttribute('data-en');
+    const arText = element.getAttribute('data-ar');
+    
+    if (isArabic && arText) {
+      element.textContent = arText;
+      element.parentElement.parentElement.setAttribute('dir', 'rtl');
+    } else {
+      element.textContent = enText.toUpperCase();
+      element.parentElement.parentElement.removeAttribute('dir');
+    }
+  });
+  
+  // Update legend
+  const legend = document.getElementById('scoresLegend');
+  if (legend) {
+    legend.textContent = isArabic ? 'درجات التقييم' : 'Experience Scores';
+  }
+  
+  // Update form direction
+  if (isArabic) {
+    document.body.classList.add('lang-ar');
+  } else {
+    document.body.classList.remove('lang-ar');
+  }
+}
+
+// Initialize language display
+document.addEventListener('DOMContentLoaded', () => {
+  updateQuestionTexts();
+});
 </script>
+
 <script type="module" src="/static/js/survey_main.js"></script>
 {% endblock %}

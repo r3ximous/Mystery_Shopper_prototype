@@ -1,0 +1,15 @@
+{
+  "channel": "WEB",
+  "location_code": "TEST-001",
+  "shopper_id": "TESTER-001",
+  "visit_datetime": "2024-12-27T14:30:00",
+  "scores": [
+    {"question_id": "SVC_001", "score": 4},
+    {"question_id": "SVC_002", "score": 5},
+    {"question_id": "FAC_001", "score": 3}
+  ],
+  "latency_samples": [
+    {"question_id": "SVC_001", "ms": 1500.0},
+    {"question_id": "SVC_002", "ms": 2100.0}
+  ]
+}

@@ -13,18 +13,45 @@ import { state } from './survey_state.js';
  * @returns {object} The submission payload.
  */
 function buildPayload(data) {
+    // Get all form fields that match question pattern (either Q1, Q2... or SVC_001, etc.)
+    const scores = [];
+    const latencySamples = [];
+    
+    // Iterate through form data to find question responses
+    for (const [key, value] of data.entries()) {
+        // Check if this is a question field (starts with Q or contains underscore)
+        if ((key.startsWith('Q') && /^Q\d+$/.test(key)) || key.includes('_')) {
+            const score = parseInt(value, 10);
+            if (score && score >= 1 && score <= 5) {
+                scores.push({
+                    question_id: key,
+                    score: score,
+                    comment: (data.get('comment_' + key) || '').trim() || undefined
+                });
+            }
+        }
+    }
+    
+    // Get latency samples from global state, matching questions we have scores for
+    const questionIds = new Set(scores.map(s => s.question_id));
+    const availableLatency = (window.__latencySamplesSent || state.latencySamples || []).slice(-25);
+    
+    for (const sample of availableLatency) {
+        if (sample && sample.question_id && questionIds.has(sample.question_id) && sample.ms > 0) {
+            latencySamples.push({
+                question_id: sample.question_id,
+                ms: parseFloat(sample.ms)
+            });
+        }
+    }
+
     return {
         channel: data.get('channel'),
         location_code: data.get('location_code'),
         shopper_id: data.get('shopper_id'),
         visit_datetime: new Date(data.get('visit_datetime')).toISOString(),
-        scores: QUESTIONS.map(q => ({
-            question_id: q.id,
-            score: parseInt(data.get(q.id), 10) || 0, // Ensure score is a number
-            comment: (data.get('comment_' + q.id) || '').trim() || undefined
-        })),
-        // Use the latency samples captured during the voice session, limit to last 25
-        latency_samples: (window.__latencySamplesSent || state.latencySamples || []).slice(-25)
+        scores: scores,
+        latency_samples: latencySamples
     };
 }
 
@@ -41,6 +68,11 @@ async function handleFormSubmit(e, form, resultEl) {
     try {
         const data = new FormData(form);
         const payload = buildPayload(data);
+
+        // Debug logging
+        console.log('Form submission payload:', payload);
+        console.log('Number of scores:', payload.scores.length);
+        console.log('Question IDs found:', payload.scores.map(s => s.question_id));
 
         const response = await fetch('/api/survey/submit', {
             method: 'POST',
@@ -59,8 +91,30 @@ async function handleFormSubmit(e, form, resultEl) {
         resultEl.scrollIntoView({ behavior: 'smooth' });
 
     } catch (err) {
-        resultEl.textContent = 'Submission failed: ' + err.message;
+        let errorMessage = err.message;
+        
+        // If it's a validation error, try to show more details
+        if (err.message.includes('422') || err.message.includes('Unprocessable Entity')) {
+            try {
+                const response = await fetch('/api/survey/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const errorDetails = await response.json();
+                if (errorDetails.detail) {
+                    errorMessage = Array.isArray(errorDetails.detail) 
+                        ? errorDetails.detail.map(d => d.msg || d).join(', ')
+                        : errorDetails.detail;
+                }
+            } catch (detailError) {
+                // Ignore if we can't get details
+            }
+        }
+        
+        resultEl.textContent = 'Submission failed: ' + errorMessage;
         console.error('Submission error:', err);
+        console.error('Payload that failed:', payload);
     }
 }
 

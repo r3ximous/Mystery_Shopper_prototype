@@ -1,18 +1,12 @@
 from datetime import datetime
+from sqlalchemy.orm import Session
 from ..schemas.survey import SurveySubmissionIn, SurveySubmissionOut
 from ..core.security import sanitize_text
+from .question_service import QuestionService
 from typing import List, Dict, Any
 
 _DB: List[SurveySubmissionOut] = []
 _COUNTER = 1
-
-QUESTIONS = {
-    "Q1": "Greeting professionalism",
-    "Q2": "Wait time satisfaction",
-    "Q3": "Resolution effectiveness",
-    "Q4": "Facility cleanliness",
-    "Q5": "Overall experience"
-}
 
 CHANNEL_WEIGHTS = {
     "CALL_CENTER": 1.0,
@@ -23,11 +17,15 @@ CHANNEL_WEIGHTS = {
 
 ALLOWED_CHANNELS = {"CALL_CENTER","ON_SITE","WEB","MOBILE_APP"}
 
-def save_submission(payload: SurveySubmissionIn) -> SurveySubmissionOut:
+def save_submission(payload: SurveySubmissionIn, db: Session) -> SurveySubmissionOut:
     global _COUNTER
-    # Basic validation: ensure all question ids exist
+    # Basic validation: ensure all question ids exist in database
+    question_service = QuestionService(db)
+    active_questions = question_service.get_active_questions()
+    valid_question_ids = {q['code'] for q in active_questions}
+    
     for qs in payload.scores:
-        if qs.question_id not in QUESTIONS:
+        if qs.question_id not in valid_question_ids:
             raise ValueError(f"Invalid question id: {qs.question_id}")
     if payload.channel not in ALLOWED_CHANNELS:
         raise ValueError("Unsupported channel")

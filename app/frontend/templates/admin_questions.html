@@ -1,0 +1,406 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <h2>Question Management</h2>
+  <div style="display: flex; gap: 0.5rem;">
+    <button id="addQuestionBtn" class="secondary-btn">+ Add Question</button>
+    <button id="addCategoryBtn" class="secondary-btn">+ Add Category</button>
+    <select id="languageSelect" class="secondary-btn">
+      <option value="en" {{ 'selected' if language == 'en' else '' }}>English</option>
+      <option value="ar" {{ 'selected' if language == 'ar' else '' }}>العربية</option>
+    </select>
+  </div>
+</div>
+
+<div class="grid cols-2">
+  <!-- Question List -->
+  <div class="card">
+    <h3>Questions</h3>
+    <div id="questionsList" class="questions-admin">
+      {% for question in questions %}
+      <div class="question-item" data-code="{{ question.id }}">
+        <div class="question-header">
+          <span class="question-code">{{ question.id }}</span>
+          <span class="question-weight">Weight: {{ question.weight }}</span>
+          <div class="question-actions">
+            <button onclick="editQuestion('{{ question.id }}')" class="edit-btn">✏️</button>
+            <button onclick="deleteQuestion('{{ question.id }}')" class="delete-btn">🗑️</button>
+            <button class="drag-handle">⋮⋮</button>
+          </div>
+        </div>
+        <div class="question-text">
+          <div class="text-en">{{ question.text_en }}</div>
+          {% if language == 'ar' and question.text_ar %}
+          <div class="text-ar" dir="rtl">{{ question.text_ar }}</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Edit Panel -->
+  <div class="card">
+    <h3 id="editTitle">Add New Question</h3>
+    <form id="questionForm">
+      <input type="hidden" id="questionCode" />
+      <input type="hidden" id="isEditing" value="false" />
+      
+      <div class="label-row">
+        <label><span>Question Code</span>
+          <input type="text" id="code" placeholder="e.g., SVC_003" required maxlength="20" />
+        </label>
+      </div>
+      
+      <div class="label-row">
+        <label><span>Category</span>
+          <select id="categoryId" required>
+            <option value="">Select Category...</option>
+            <!-- Categories will be populated by JavaScript -->
+          </select>
+        </label>
+      </div>
+
+      <div class="label-row">
+        <label><span>English Text</span>
+          <textarea id="textEn" placeholder="Question text in English" required maxlength="500"></textarea>
+        </label>
+      </div>
+
+      <div class="label-row">
+        <label><span>Arabic Text</span>
+          <textarea id="textAr" placeholder="نص السؤال بالعربية" required maxlength="500" dir="rtl"></textarea>
+        </label>
+      </div>
+
+      <div class="grid cols-2">
+        <div class="label-row">
+          <label><span>Weight</span>
+            <input type="number" id="weight" min="0.1" max="5.0" step="0.1" value="1.0" required />
+          </label>
+        </div>
+        
+        <div class="label-row">
+          <label><span>Display Order</span>
+            <input type="number" id="displayOrder" min="0" value="0" />
+          </label>
+        </div>
+      </div>
+
+      <div class="label-row">
+        <label><span>Help Text (English)</span>
+          <textarea id="helpEn" placeholder="Optional help text"></textarea>
+        </label>
+      </div>
+
+      <div class="label-row">
+        <label><span>Help Text (Arabic)</span>
+          <textarea id="helpAr" placeholder="نص مساعد اختياري" dir="rtl"></textarea>
+        </label>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <button type="submit" id="saveBtn">Save Question</button>
+        <button type="button" onclick="resetForm()" class="secondary-btn">Reset</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Category Management Modal -->
+<div id="categoryModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>Add New Category</h3>
+    <form id="categoryForm">
+      <div class="label-row">
+        <label><span>Category Code</span>
+          <input type="text" id="catCode" placeholder="e.g., SERVICE" required maxlength="20" />
+        </label>
+      </div>
+      
+      <div class="label-row">
+        <label><span>English Name</span>
+          <input type="text" id="catNameEn" placeholder="Category name in English" required maxlength="100" />
+        </label>
+      </div>
+
+      <div class="label-row">
+        <label><span>Arabic Name</span>
+          <input type="text" id="catNameAr" placeholder="اسم الفئة بالعربية" required maxlength="100" dir="rtl" />
+        </label>
+      </div>
+
+      <div class="label-row">
+        <label><span>Weight</span>
+          <input type="number" id="catWeight" min="0.1" max="5.0" step="0.1" value="1.0" required />
+        </label>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <button type="submit">Create Category</button>
+        <button type="button" onclick="closeCategoryModal()" class="secondary-btn">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+.questions-admin {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.question-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  background: var(--bg-alt);
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.question-code {
+  font-family: monospace;
+  background: var(--accent);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.7rem;
+}
+
+.question-weight {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.question-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.edit-btn, .delete-btn, .drag-handle {
+  background: none;
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.edit-btn:hover { background: var(--accent); }
+.delete-btn:hover { background: var(--danger); }
+.drag-handle { cursor: grab; }
+
+.question-text {
+  font-size: 0.85rem;
+}
+
+.text-en { margin-bottom: 0.25rem; }
+.text-ar { 
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--card);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+</style>
+
+<script>
+let categories = [];
+let currentLanguage = '{{ language }}';
+
+// Initialize
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadCategories();
+  setupEventListeners();
+});
+
+async function loadCategories() {
+  try {
+    const response = await fetch('/api/questions/categories?language=' + currentLanguage);
+    const data = await response.json();
+    categories = data.categories || [];
+    
+    const select = document.getElementById('categoryId');
+    select.innerHTML = '<option value="">Select Category...</option>';
+    
+    categories.forEach(cat => {
+      const option = document.createElement('option');
+      option.value = cat.id;
+      option.textContent = `${cat.code} - ${cat.name}`;
+      select.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Failed to load categories:', error);
+  }
+}
+
+function setupEventListeners() {
+  // Language selector
+  document.getElementById('languageSelect').addEventListener('change', (e) => {
+    window.location.href = `?lang=${e.target.value}`;
+  });
+
+  // Add question form
+  document.getElementById('questionForm').addEventListener('submit', handleQuestionSubmit);
+  
+  // Add category form
+  document.getElementById('categoryForm').addEventListener('submit', handleCategorySubmit);
+  
+  // Modal triggers
+  document.getElementById('addQuestionBtn').addEventListener('click', resetForm);
+  document.getElementById('addCategoryBtn').addEventListener('click', () => {
+    document.getElementById('categoryModal').style.display = 'flex';
+  });
+}
+
+async function handleQuestionSubmit(e) {
+  e.preventDefault();
+  
+  const formData = {
+    code: document.getElementById('code').value,
+    category_id: parseInt(document.getElementById('categoryId').value),
+    text_en: document.getElementById('textEn').value,
+    text_ar: document.getElementById('textAr').value,
+    help_en: document.getElementById('helpEn').value || null,
+    help_ar: document.getElementById('helpAr').value || null,
+    weight: parseFloat(document.getElementById('weight').value),
+    display_order: parseInt(document.getElementById('displayOrder').value)
+  };
+
+  const isEditing = document.getElementById('isEditing').value === 'true';
+  const questionCode = document.getElementById('questionCode').value;
+
+  try {
+    const url = isEditing ? `/api/questions/${questionCode}` : '/api/questions/';
+    const method = isEditing ? 'PUT' : 'POST';
+    
+    const response = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+
+    if (response.ok) {
+      alert(isEditing ? 'Question updated!' : 'Question created!');
+      location.reload();
+    } else {
+      const error = await response.json();
+      alert('Error: ' + error.detail);
+    }
+  } catch (error) {
+    alert('Failed to save question: ' + error.message);
+  }
+}
+
+async function handleCategorySubmit(e) {
+  e.preventDefault();
+  
+  const formData = {
+    code: document.getElementById('catCode').value,
+    name_en: document.getElementById('catNameEn').value,
+    name_ar: document.getElementById('catNameAr').value,
+    weight: parseFloat(document.getElementById('catWeight').value)
+  };
+
+  try {
+    const response = await fetch('/api/questions/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+
+    if (response.ok) {
+      alert('Category created!');
+      closeCategoryModal();
+      await loadCategories();
+    } else {
+      const error = await response.json();
+      alert('Error: ' + error.detail);
+    }
+  } catch (error) {
+    alert('Failed to create category: ' + error.message);
+  }
+}
+
+function editQuestion(code) {
+  // Find question data and populate form
+  const questionItem = document.querySelector(`[data-code="${code}"]`);
+  // This would need to fetch full question data from API
+  document.getElementById('editTitle').textContent = `Edit Question: ${code}`;
+  document.getElementById('questionCode').value = code;
+  document.getElementById('isEditing').value = 'true';
+  document.getElementById('code').value = code;
+  document.getElementById('code').readOnly = true;
+  
+  // Populate other fields - would need full API call here
+  alert(`Edit functionality for ${code} - would populate form with existing data`);
+}
+
+async function deleteQuestion(code) {
+  if (!confirm(`Delete question ${code}? This will deactivate it.`)) return;
+  
+  try {
+    const response = await fetch(`/api/questions/${code}`, {
+      method: 'DELETE'
+    });
+
+    if (response.ok) {
+      alert('Question deleted!');
+      location.reload();
+    } else {
+      alert('Failed to delete question');
+    }
+  } catch (error) {
+    alert('Error: ' + error.message);
+  }
+}
+
+function resetForm() {
+  document.getElementById('questionForm').reset();
+  document.getElementById('editTitle').textContent = 'Add New Question';
+  document.getElementById('questionCode').value = '';
+  document.getElementById('isEditing').value = 'false';
+  document.getElementById('code').readOnly = false;
+  document.getElementById('weight').value = '1.0';
+  document.getElementById('displayOrder').value = '0';
+}
+
+function closeCategoryModal() {
+  document.getElementById('categoryModal').style.display = 'none';
+  document.getElementById('categoryForm').reset();
+}
+</script>
+
+{% endblock %}

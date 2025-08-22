@@ -10,9 +10,13 @@ class LatencySample(BaseModel):
 
     @field_validator("question_id")
     @classmethod
-    def question_id_format(cls, v: str):  # reuse rule
-        if not v or not v.startswith('Q'):
-            raise ValueError("Question id must start with 'Q'")
+    def question_id_format(cls, v: str):  # Updated to support new question codes
+        if not v or len(v.strip()) == 0:
+            raise ValueError("Question id cannot be empty")
+        # Accept both old format (Q1, Q2...) and new format (SVC_001, FAC_001...)
+        v = v.strip()
+        if not (v.startswith('Q') or '_' in v):
+            raise ValueError("Question id must start with 'Q' or contain underscore (e.g., SVC_001)")
         return v
 
 class QuestionScore(BaseModel):
@@ -23,8 +27,12 @@ class QuestionScore(BaseModel):
     @field_validator("question_id")
     @classmethod
     def question_id_format(cls, v: str):
-        if not v or not v.startswith('Q'):
-            raise ValueError("Question id must start with 'Q'")
+        if not v or len(v.strip()) == 0:
+            raise ValueError("Question id cannot be empty")
+        # Accept both old format (Q1, Q2...) and new format (SVC_001, FAC_001...)
+        v = v.strip()
+        if not (v.startswith('Q') or '_' in v):
+            raise ValueError("Question id must start with 'Q' or contain underscore (e.g., SVC_001)")
         return v
 
 class SurveySubmissionIn(BaseModel):
