@@ -224,3 +224,35 @@ button:active { transform:translateY(1px); }
     --bg-alt: #111;
   }
 }
+
+/* Survey Form Specific Styles */
+.weight-indicator {
+  font-size: 0.6rem;
+  color: var(--accent);
+  text-align: center;
+  margin-top: 0.25rem;
+  font-weight: 600;
+}
+
+.question-text {
+  transition: all 0.3s ease;
+}
+
+[dir="rtl"] .q-card {
+  text-align: right;
+}
+
+[dir="rtl"] .stars {
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+/* Language-specific styling */
+.lang-ar {
+  direction: rtl;
+  text-align: right;
+}
+
+.lang-ar .question-text {
+  font-family: 'Arial', sans-serif;
+}

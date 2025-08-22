@@ -51,7 +51,7 @@
               <span class="question-text" data-en="{{ q.text_en }}" data-ar="{{ q.text_ar or q.text_en }}">
                 {% if language == 'ar' and q.text_ar %}{{ q.text_ar }}{% else %}{{ q.text_en|upper }}{% endif %}
               </span>
-              <span class="badge">{{ q.id }}</span>
+              <span class="badge debug-only" style="display: none;">{{ q.id }}</span>
             </div>
             <div class="stars">
               {# Render radios high -> low so row-reverse shows ascending left->right #}
@@ -61,7 +61,7 @@
               {% endfor %}
             </div>
             {% if q.weight != 1.0 %}
-            <div class="weight-indicator">Weight: {{ q.weight }}x</div>
+            <div class="weight-indicator debug-only" style="display: none;">Weight: {{ q.weight }}x</div>
             {% endif %}
           </div>
           {% endfor %}
@@ -91,91 +91,14 @@
   </div>
 </div>
 
-<style>
-.weight-indicator {
-  font-size: 0.6rem;
-  color: var(--accent);
-  text-align: center;
-  margin-top: 0.25rem;
-  font-weight: 600;
-}
-
-.question-text {
-  transition: all 0.3s ease;
-}
-
-[dir="rtl"] .q-card {
-  text-align: right;
-}
-
-[dir="rtl"] .stars {
-  justify-content: flex-start;
-  flex-direction: row;
-}
-
-/* Language-specific styling */
-.lang-ar {
-  direction: rtl;
-  text-align: right;
-}
-
-.lang-ar .question-text {
-  font-family: 'Arial', sans-serif;
-}
-</style>
-
 <script>
-// Global language state
-let currentLanguage = '{{ language }}';
-
 // Inject survey questions from backend (backward compatibility)
 window.__SURVEY_QUESTIONS = JSON.parse(decodeURIComponent("{{ questions|tojson|urlencode }}"));
 
-function switchLanguage(newLang) {
-  if (newLang === currentLanguage) return;
-  
-  // Update URL and reload with new language
-  const url = new URL(window.location);
-  url.searchParams.set('lang', newLang);
-  window.location.href = url.toString();
-}
-
-// Update question text based on current language
-function updateQuestionTexts() {
-  const isArabic = currentLanguage === 'ar';
-  
-  document.querySelectorAll('.question-text').forEach(element => {
-    const enText = element.getAttribute('data-en');
-    const arText = element.getAttribute('data-ar');
-    
-    if (isArabic && arText) {
-      element.textContent = arText;
-      element.parentElement.parentElement.setAttribute('dir', 'rtl');
-    } else {
-      element.textContent = enText.toUpperCase();
-      element.parentElement.parentElement.removeAttribute('dir');
-    }
-  });
-  
-  // Update legend
-  const legend = document.getElementById('scoresLegend');
-  if (legend) {
-    legend.textContent = isArabic ? 'درجات التقييم' : 'Experience Scores';
-  }
-  
-  // Update form direction
-  if (isArabic) {
-    document.body.classList.add('lang-ar');
-  } else {
-    document.body.classList.remove('lang-ar');
-  }
-}
-
-// Initialize language display
-document.addEventListener('DOMContentLoaded', () => {
-  updateQuestionTexts();
-});
+// Pass current language to external scripts
+window.__CURRENT_LANGUAGE = '{{ language }}';
 </script>
 
+<script src="/static/js/survey_form.js"></script>
 <script type="module" src="/static/js/survey_main.js"></script>
 {% endblock %}

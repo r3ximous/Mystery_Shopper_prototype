@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Mode Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .debug-only { color: #007acc; font-weight: bold; }
+        button { padding: 10px 15px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Debug Mode Test</h1>
+    
+    <div class="test-section">
+        <h3>Current Debug Mode Status</h3>
+        <p>Debug Mode: <span id="debugStatus">OFF</span></p>
+        <button onclick="toggleDebug()">Toggle Debug Mode</button>
+        <button onclick="checkStatus()">Check Status</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Debug Elements (should only show when debug mode is ON)</h3>
+        <p>Question Code: <span class="debug-only" style="display: none;">SVC_001</span></p>
+        <p>Weight Indicator: <span class="debug-only" style="display: none;">Weight: 1.5x</span></p>
+    </div>
+    
+    <div class="test-section">
+        <h3>Instructions</h3>
+        <p>1. Toggle debug mode using the button above</p>
+        <p>2. Watch the question code and weight indicator appear/disappear</p>
+        <p>3. This mimics how the survey form will behave</p>
+    </div>
+
+    <script>
+        function updateDebugVisibility() {
+            const isDebugMode = localStorage.getItem('voiceDebugVisible') === '1';
+            const debugElements = document.querySelectorAll('.debug-only');
+            const statusElement = document.getElementById('debugStatus');
+            
+            debugElements.forEach(element => {
+                element.style.display = isDebugMode ? 'inline' : 'none';
+            });
+            
+            statusElement.textContent = isDebugMode ? 'ON' : 'OFF';
+            statusElement.style.color = isDebugMode ? 'green' : 'red';
+        }
+        
+        function toggleDebug() {
+            const current = localStorage.getItem('voiceDebugVisible') === '1';
+            localStorage.setItem('voiceDebugVisible', current ? '0' : '1');
+            updateDebugVisibility();
+            
+            // Dispatch event for other listeners
+            window.dispatchEvent(new CustomEvent('toggle-transcript-debug'));
+        }
+        
+        function checkStatus() {
+            updateDebugVisibility();
+            alert('Debug mode is: ' + (localStorage.getItem('voiceDebugVisible') === '1' ? 'ON' : 'OFF'));
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDebugVisibility();
+        });
+        
+        // Listen for debug toggle events
+        window.addEventListener('toggle-transcript-debug', updateDebugVisibility);
+    </script>
+</body>
+</html>
