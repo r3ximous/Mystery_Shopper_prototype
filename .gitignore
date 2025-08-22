@@ -21,9 +21,6 @@ build/
 venv/
 .venv/
 
-# VS Code
-.vscode/
-.history/
 
 # OS / Misc
 .DS_Store
