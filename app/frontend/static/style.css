@@ -169,5 +169,58 @@ button:active { transform:translateY(1px); }
 .light .stars label { color:#c9c3b8; }
 .light .stars label:hover, .light .stars label:hover ~ label, .light .stars input:checked ~ label { color:#d4b068; }
 .light .voice-partial.online { color:#c79a48; }
-.light #dbgPanel { background:var(--card) !important; }
-.light #dbgPanel hr { border-top:1px solid var(--border); }
+/* Mobile-first responsive design enhancements */
+@media (max-width: 767px) {
+  header { padding: .6rem 1rem; flex-wrap: wrap; }
+  header h1 { font-size: 1rem; }
+  nav { order: 3; width: 100%; margin-top: .5rem; }
+  nav a { padding: .4rem .6rem; font-size: .8rem; }
+  
+  main { padding: 0 1rem; margin: 1rem auto 2rem; }
+  .card { padding: .8rem 1rem; }
+  
+  .questions { grid-template-columns: 1fr; }
+  .q-card { padding: .7rem .8rem; }
+  
+  .voice-status-group { flex-direction: column; gap: .5rem; }
+  .voice-vu { width: 100%; height: 30px; margin-left: 0; }
+  
+  button { padding: .7rem 1rem; font-size: .9rem; }
+  input, select { padding: .6rem .7rem; font-size: .9rem; }
+}
+
+/* PWA Install button */
+.install-btn {
+  background: var(--accent-grad);
+  color: #fff;
+  border: none;
+  padding: .5rem .8rem;
+  border-radius: var(--radius-sm);
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: .5rem;
+}
+
+/* Touch-friendly improvements */
+@media (pointer: coarse) {
+  button, input, select { min-height: 44px; }
+  .stars label { min-width: 44px; min-height: 44px; }
+  nav a { min-height: 44px; display: flex; align-items: center; }
+}
+
+/* Safe area adjustments for iOS */
+@supports (padding: max(0px)) {
+  header { padding-left: max(1.4rem, env(safe-area-inset-left)); }
+  header { padding-right: max(1.4rem, env(safe-area-inset-right)); }
+  main { padding-left: max(1.2rem, env(safe-area-inset-left)); }
+  main { padding-right: max(1.2rem, env(safe-area-inset-right)); }
+}
+
+/* Dark theme optimizations for mobile */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000;
+    --bg-alt: #111;
+  }
+}
