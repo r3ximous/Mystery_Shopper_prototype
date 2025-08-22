@@ -16,7 +16,7 @@ app.add_middleware(
 
 app.include_router(survey.router, prefix="/survey", tags=["survey"])
 app.include_router(admin.router, prefix="/admin", tags=["admin"])
-app.include_router(question_router, prefix="", tags=["questions"])
+app.include_router(question_router, prefix="/api", tags=["questions"])
 
 @app.on_event("startup")
 async def startup_event():
