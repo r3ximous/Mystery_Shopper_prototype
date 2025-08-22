@@ -65,7 +65,27 @@ async function handleFormSubmit(e, form, resultEl) {
     e.preventDefault();
     resultEl.textContent = 'Submitting...';
 
+    // Temporarily pause voice recognition during submission to prevent interference
+    let voiceWasActive = false;
+    let recognitionPaused = false;
+    
     try {
+        // Check if voice mode is active and pause it
+        if (window.state && window.state.listening) {
+            voiceWasActive = true;
+            console.log('Pausing voice recognition for form submission...');
+            
+            // Stop voice recognition temporarily
+            if (window.recog) {
+                try {
+                    window.recog.stop();
+                    recognitionPaused = true;
+                } catch (err) {
+                    console.warn('Error stopping voice recognition:', err);
+                }
+            }
+        }
+
         const data = new FormData(form);
         const payload = buildPayload(data);
 
@@ -115,6 +135,26 @@ async function handleFormSubmit(e, form, resultEl) {
         resultEl.textContent = 'Submission failed: ' + errorMessage;
         console.error('Submission error:', err);
         console.error('Payload that failed:', payload);
+    } finally {
+        // Resume voice recognition if it was active and we paused it
+        if (voiceWasActive && recognitionPaused) {
+            console.log('Resuming voice recognition after form submission...');
+            
+            // Small delay to ensure form submission is fully complete
+            setTimeout(() => {
+                try {
+                    if (window.recog && window.state && window.state.listening !== false) {
+                        window.recog.start();
+                    }
+                } catch (err) {
+                    console.warn('Error resuming voice recognition:', err);
+                    // If direct restart fails, try using the voice flow's restart mechanism
+                    if (window.scheduleRestart) {
+                        window.scheduleRestart();
+                    }
+                }
+            }, 500);
+        }
     }
 }
 

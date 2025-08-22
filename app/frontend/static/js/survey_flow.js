@@ -366,6 +366,9 @@ function ensureRecognition() {
     recog.continuous = true;
     recog.interimResults = true;
     recog.lang = state.currentLang === 'ar' ? 'ar-SA' : 'en-US';
+    
+    // Expose recognition instance globally for form submission handling
+    window.recog = recog;
 
     recog.onstart = () => {
         state.listening = true;
@@ -529,4 +532,8 @@ export function initFlow() {
 
     // Expose for other modules (e.g., survey_main getLang)
     window.state = state;
+    
+    // Expose recognition and restart functions for form submission handling
+    window.recog = recog;
+    window.scheduleRestart = scheduleRestart;
 }
