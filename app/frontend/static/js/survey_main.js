@@ -1,16 +1,15 @@
-import { initVoice } from './survey_voice.js';
 import { initSubmit } from './survey_submit.js';
 import { initTTS } from './survey_tts.js';
 import { initVAD } from './survey_vad.js';
-import { initOfflineASR } from './survey_offline_asr.js';
 import './survey_dom.js';
-import { initCommands } from './survey_commands.js';
+import { initFlow } from './survey_flow.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   initSubmit();
-  const voiceApi = initVoice();
-  initCommands({ getLang: voiceApi.getLang });
-  initTTS(voiceApi.getLang, voiceApi.pauseRecognition, voiceApi.resumeRecognition);
+  // Initialize base flow (sets up recognition + event hooks)
+  initFlow();
+  // TTS / VAD modules (language accessor provided via state in flow)
+  const getLang = () => (window?.state?.currentLang) || 'en';
+  initTTS(getLang, () => {}, () => {});
   initVAD();
-  initOfflineASR(voiceApi.getLang, voiceApi.startVoice);
 });
