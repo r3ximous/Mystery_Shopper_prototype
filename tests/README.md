@@ -34,6 +34,11 @@ This directory contains all test files and debugging utilities for the Mystery S
   - Tests correct API paths (/survey/submit vs /api/survey/submit)
   - Used to debug routing issues
 
+- **`test_api_pytest.py`** - Pytest-based API testing
+  - Uses pytest framework for structured testing
+  - Tests API endpoints with async client
+  - Originally located in app/backend/tests/
+
 ### Comprehensive Testing
 - **`run_full_test.py`** - Complete end-to-end system test
   - Tests all API endpoints sequentially
@@ -66,6 +71,32 @@ python simple_test.py             # Test HTTP API
 python check_questions.py         # Inspect database
 python run_full_test.py           # Complete system test
 ```
+
+### Debugging and Diagnostic Tools
+- **`debug_api.py`** - Direct API testing and 422 error debugging
+  - Tests survey submission API with custom payloads
+  - Useful for diagnosing validation errors
+  - Bypasses frontend to test backend directly
+
+- **`debug_voice_submit.js`** - Voice mode form submission diagnostics
+  - Browser console script to debug voice mode issues
+  - Functions: debugVoiceSubmission(), debugSpeechRecognition(), testManualSubmit()
+  - Created to solve voice mode preventing form submission
+
+- **`debug_test.html`** - Debug mode UI testing page
+  - Standalone HTML page to test debug mode visibility
+  - Tests question codes and weight indicators show/hide functionality
+  - Useful for testing localStorage debug state without full survey form
+
+### Utility Scripts
+- **`check_questions.py`** - Question inspection and validation utility
+  - Lists all questions in database with status information
+  - Validates question data integrity
+  - Shows active/inactive questions
+
+- **`system_status.py`** - Overall system health check
+  - Comprehensive system status verification
+  - Tests database connection, API endpoints, question availability
 
 ### Prerequisites
 - Backend server must be running on port 8000 or 8001
