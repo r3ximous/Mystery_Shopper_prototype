@@ -29,9 +29,15 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 async def get_questions_from_api(language: str = "en"):
     """Get questions dynamically from the API"""
     try:
-        # Note: In production, this would use the actual API URL
-        # For development, we'll return fallback questions directly
-        return get_fallback_questions()
+        # Use the mounted API to get questions
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"http://127.0.0.1:3000/api/questions?language={language}")
+            if response.status_code == 200:
+                data = response.json()
+                return data.get('questions', get_fallback_questions())
+            else:
+                print(f"API returned status {response.status_code}, using fallback")
+                return get_fallback_questions()
     except Exception as e:
         print(f"Error fetching questions: {e}")
         return get_fallback_questions()

@@ -18,7 +18,7 @@ def test_submission_directly():
     scores = [
         QuestionScore(question_id="SVC_001", score=4),
         QuestionScore(question_id="SVC_002", score=5),
-        QuestionScore(question_id="FAC_002", score=3)  # Using FAC_002 (active) instead of FAC_001 (inactive)
+        QuestionScore(question_id="FAC_001", score=3)  # Now using FAC_001 (Cleanliness) which is active
     ]
     
     latency_samples = [
