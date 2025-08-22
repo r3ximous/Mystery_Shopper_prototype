@@ -66,11 +66,6 @@ class PWAManager {
   }
 
   setupMobileFeatures() {
-    // Geolocation for auto-filling location
-    if ('geolocation' in navigator) {
-      this.setupGeolocation();
-    }
-
     // Camera access for evidence photos
     if ('mediaDevices' in navigator) {
       this.setupCamera();
@@ -83,36 +78,6 @@ class PWAManager {
 
     // Device orientation for better UX
     this.setupOrientation();
-  }
-
-  setupGeolocation() {
-    const locationBtn = document.createElement('button');
-    locationBtn.className = 'secondary-btn';
-    locationBtn.textContent = '📍 Auto Location';
-    locationBtn.onclick = () => this.getCurrentLocation();
-
-    const locationField = document.querySelector('input[name="location_code"]');
-    if (locationField && locationField.parentNode) {
-      locationField.parentNode.appendChild(locationBtn);
-    }
-  }
-
-  getCurrentLocation() {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const locationCode = `GPS:${latitude.toFixed(6)},${longitude.toFixed(6)}`;
-        
-        const locationField = document.querySelector('input[name="location_code"]');
-        if (locationField) {
-          locationField.value = locationCode;
-        }
-      },
-      (error) => {
-        console.log('Geolocation error:', error.message);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
   }
 
   setupCamera() {
