@@ -27,11 +27,11 @@ frontend.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 async def get_questions_from_api(language: str = "en"):
-    """Get questions dynamically from the API"""
+    """Get questions dynamically from the mounted API"""
     try:
-        # Use the mounted API to get questions
-        async with httpx.AsyncClient() as client:
-            response = await client.get(f"http://127.0.0.1:3000/api/questions?language={language}")
+        # Use the mounted API directly via internal client
+        async with httpx.AsyncClient(app=frontend, base_url="http://test") as client:
+            response = await client.get(f"/api/questions?language={language}")
             if response.status_code == 200:
                 data = response.json()
                 return data.get('questions', get_fallback_questions())
