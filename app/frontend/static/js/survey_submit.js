@@ -42,6 +42,8 @@ async function handleFormSubmit(e, form, resultEl) {
         const data = new FormData(form);
         const payload = buildPayload(data);
 
+        console.log('Submitting payload:', payload); // Debug logging
+
         const response = await fetch('/api/survey/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -51,7 +53,24 @@ async function handleFormSubmit(e, form, resultEl) {
         const jsonResponse = await response.json();
 
         if (!response.ok) {
-            const errorMessage = jsonResponse.detail || `HTTP error! status: ${response.status}`;
+            console.error('Server error response:', jsonResponse);
+            let errorMessage;
+            
+            if (jsonResponse.detail) {
+                // Handle validation errors that might be arrays
+                if (Array.isArray(jsonResponse.detail)) {
+                    errorMessage = jsonResponse.detail.map(err => 
+                        err.msg || err.message || JSON.stringify(err)
+                    ).join('; ');
+                } else if (typeof jsonResponse.detail === 'object') {
+                    errorMessage = JSON.stringify(jsonResponse.detail, null, 2);
+                } else {
+                    errorMessage = jsonResponse.detail;
+                }
+            } else {
+                errorMessage = `HTTP error! status: ${response.status}`;
+            }
+            
             throw new Error(errorMessage);
         }
 
@@ -59,8 +78,14 @@ async function handleFormSubmit(e, form, resultEl) {
         resultEl.scrollIntoView({ behavior: 'smooth' });
 
     } catch (err) {
-        resultEl.textContent = 'Submission failed: ' + err.message;
+        const errorMsg = err.message || 'Unknown error occurred';
+        resultEl.textContent = 'Submission failed: ' + errorMsg;
         console.error('Submission error:', err);
+        
+        // If it's a network error, provide more helpful info
+        if (err.name === 'TypeError' && err.message.includes('fetch')) {
+            resultEl.textContent += '\n\nNetwork error - check if server is running.';
+        }
     }
 }
 

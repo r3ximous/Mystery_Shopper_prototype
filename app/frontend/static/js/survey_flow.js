@@ -38,7 +38,7 @@ let qIndex = 0;
 let pendingScore = null;
 let awaitingConfirmation = false;
 let questionStartTime = null;
-const latencySamples = []; // {qId, ms}
+const latencySamples = []; // {question_id, ms}
 
 // --- Duplicate Suppression ---
 
@@ -251,7 +251,7 @@ function recordScore(score) {
     setScore(QUESTIONS[qIndex].id, score);
     if (questionStartTime) {
         const ms = performance.now() - questionStartTime;
-        latencySamples.push({ qId: QUESTIONS[qIndex].id, ms });
+        latencySamples.push({ question_id: QUESTIONS[qIndex].id, ms });
         window.__latencySamplesSent = latencySamples.slice();
         questionStartTime = null;
         updateLatency();
