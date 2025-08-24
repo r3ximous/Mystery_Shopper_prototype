@@ -30,7 +30,7 @@ async def survey_page(request: Request):
     from ..backend.core.questions import get_questions, get_questions_by_category
     questions = get_questions()
     categories = get_questions_by_category()
-    return templates.TemplateResponse("survey_form_comprehensive.html", {
+    return templates.TemplateResponse("survey_form.html", {
         "request": request, 
         "questions": questions,
         "categories": categories
@@ -40,9 +40,11 @@ async def survey_page(request: Request):
 async def simple_survey_page(request: Request):
     from ..backend.core.questions import get_fallback_questions
     questions = get_fallback_questions()
-    return templates.TemplateResponse("survey_form.html", {
+    categories = {"Basic Questions": questions}  # Simple category structure
+    return templates.TemplateResponse("survey_form_comprehensive.html", {
         "request": request,
-        "questions": questions
+        "questions": questions,
+        "categories": categories
     })
 
 @frontend.get("/admin", response_class=HTMLResponse)

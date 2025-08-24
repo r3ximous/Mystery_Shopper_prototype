@@ -1,9 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Submit Mystery Shopping Visit</h2>
-<div class="grid cols-2">
-  <div class="card" style="grid-column:1 / -1;">
+
+<!-- Progress Indicator -->
+<div class="survey-progress">
+  <span id="progress-text">0% Complete</span>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+  <span id="question-count">0/{{ questions|length }} answered</span>
+  <!-- Language Toggle -->
+  <div class="language-toggle">
+    <button type="button" id="langToggleBtn" class="lang-btn" data-lang="en">
+      <span class="lang-icon">🌐</span>
+      <span id="lang-text">عربي</span>
+    </button>
+  </div>
+</div>
+
+<div class="survey-container">
+  <div class="card survey-header">
     <form id="surveyForm" class="survey">
+      <!-- Basic Information Section -->
+      <div class="section-header">
+        <h3>Visit Information</h3>
+        <span class="section-badge">Required</span>
+      </div>
+      
       <div class="grid cols-2">
         <div class="label-row">
           <label><span>Channel</span>
@@ -31,51 +54,142 @@
           </label>
         </div>
       </div>
-      <fieldset>
-        <legend>Experience Scores</legend>
-        <div class="questions">
-          {% for q in questions %}
-          <div class="q-card" data-q="{{ q.id }}">
-            <div class="q-title">
-              <span>{{ q.text_en|upper }}</span>
-              <span class="badge">{{ q.id }}</span>
+
+      <!-- Questions by Category -->
+      {% for category, category_questions in categories.items() %}
+      <div class="category-section">
+        <div class="section-header">
+          <h3>
+            <span data-lang="en">{{ category }}</span>
+            <span data-lang="ar" style="display: none; direction: rtl;">
+              {% if category == "Center Access" %}الوصول لمركز الخدمة
+              {% elif category == "Facilities Parking" %}مواقف السيارات
+              {% elif category == "Premises Exterior" %}المبنى الخارجي
+              {% elif category == "Premises Interior" %}المبنى من الداخل
+              {% elif category == "Waiting Area" %}قاعة الانتظار
+              {% elif category == "People of Determination" %}ذوي الهمم
+              {% elif category == "Service Accessibility" %}سهولة الوصول للخدمة
+              {% elif category == "Receptionist Soft Skills" %}المهارات الشخصية لموظف الاستقبال
+              {% elif category == "Receptionist knowledge" %}معرفة موظف الاستقبال
+              {% elif category == "Customer service employee soft Skills" %}المهارات الشخصية لموظف خدمة المتعاملين
+              {% elif category == "Customer service employee knowledge" %}معرفة موظف خدمة المتعاملين
+              {% elif category == "Speed of Service" %}سرعة الخدمة
+              {% elif category == "Ease of use" %}سهولة الاستخدام
+              {% elif category == "Service Information Quality" %}جودة معلومات الخدمة
+              {% elif category == "Customer privacy" %}خصوصية العميل
+              {% elif category == "Customer effort" %}جهد العميل
+              {% else %}{{ category }}
+              {% endif %}
+            </span>
+          </h3>
+          <span class="section-badge">{{ category_questions|length }} questions</span>
+        </div>
+        
+        <div class="questions-grid">
+          {% for q in category_questions %}
+          <div class="question-card" data-q="{{ q.id }}">
+            <div class="question-header">
+              <div class="q-title">
+                <span class="q-text" data-lang="en">{{ q.text_en }}</span>
+                {% if q.text_ar %}
+                <span class="q-text" data-lang="ar" style="display: none; direction: rtl; text-align: right;">{{ q.text_ar }}</span>
+                {% endif %}
+                <span class="badge">{{ q.id }}</span>
+              </div>
+              {% if q.elaboration_en %}
+              <div class="q-elaboration" data-lang="en">{{ q.elaboration_en }}</div>
+              {% endif %}
             </div>
-            <div class="stars">
-              {# Render radios high -> low so row-reverse shows ascending left->right #}
-              {% for i in range(5,0,-1) %}
-                <input id="{{ q.id }}_{{ i }}" type="radio" name="{{ q.id }}" value="{{ i }}" required />
-                <label for="{{ q.id }}_{{ i }}" title="{{ q.text_en }}: {{ i }} star{{ 's' if i>1 }}">★</label>
-              {% endfor %}
+
+            <div class="question-input">
+              {% if q.question_type == 'yes_no' %}
+                <!-- Yes/No Questions -->
+                <div class="yes-no-buttons">
+                  <input id="{{ q.id }}_yes" type="radio" name="{{ q.id }}" value="1" required />
+                  <label for="{{ q.id }}_yes" class="btn-option yes-btn">Yes / نعم</label>
+                  <input id="{{ q.id }}_no" type="radio" name="{{ q.id }}" value="0" required />
+                  <label for="{{ q.id }}_no" class="btn-option no-btn">No / لا</label>
+                </div>
+                
+              {% elif q.question_type == 'multiple_choice' and q.answer_options %}
+                <!-- Multiple Choice Questions -->
+                <div class="multiple-choice">
+                  {% for option in q.answer_options %}
+                  <input id="{{ q.id }}_{{ option.value }}" type="radio" name="{{ q.id }}" value="{{ option.value }}" required />
+                  <label for="{{ q.id }}_{{ option.value }}" class="choice-option">
+                    <span class="choice-score">{{ option.value }}</span>
+                    <span class="choice-text">{{ option.label_en }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
+                
+              {% else %}
+                <!-- Default: 1-5 Star Rating -->
+                <div class="stars">
+                  {% for i in range(5,0,-1) %}
+                    <input id="{{ q.id }}_{{ i }}" type="radio" name="{{ q.id }}" value="{{ i }}" required />
+                    <label for="{{ q.id }}_{{ i }}" title="{{ q.text_en }}: {{ i }} star{{ 's' if i>1 }}">★</label>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              {% if q.has_conditions %}
+              <div class="condition-note">
+                <small>{{ q.conditions }}</small>
+              </div>
+              {% endif %}
             </div>
+
+            <!-- Optional comment field for detailed questions -->
+            {% if q.elaboration_en %}
+            <div class="comment-section">
+              <label class="comment-label">
+                <span>Additional Comments (Optional)</span>
+                <textarea name="comment_{{ q.id }}" placeholder="Any additional observations..." rows="2"></textarea>
+              </label>
+            </div>
+            {% endif %}
           </div>
           {% endfor %}
         </div>
-      </fieldset>
-      <div class="inline-actions voice-block" style="margin-top:.5rem;">
-        <div class="voice-controls">
-          <button type="submit">Submit</button>
-          <button type="reset" id="resetBtn" class="secondary-btn">Reset</button>
-          <button type="button" id="voiceBtn" data-mode="off" class="secondary-btn">Voice Mode</button>
-          <button type="button" id="langBtn" aria-pressed="false" class="secondary-btn" title="Toggle Arabic">AR</button>
-          <span id="asrSpinner" class="spinner" aria-hidden="true"></span>
-          <span id="cpuLoad" class="cpu-load" style="display:none;"></span>
-        </div>
-        <div class="voice-status-group">
-          <div class="status-line">
-            <span id="voiceStatus" class="voice-status" aria-live="polite">Voice idle</span>
-            <span id="voiceProgress" class="voice-progress"></span>
-            <span id="latencyStats" class="voice-progress"></span>
+      </div>
+      {% endfor %}
+
+      <!-- Voice Controls & Actions -->
+      <div class="action-section">
+        <div class="inline-actions voice-block">
+          <div class="voice-controls">
+            <button type="submit">Submit Survey</button>
+            <button type="reset" id="resetBtn" class="secondary-btn">Reset</button>
+            <button type="button" id="voiceBtn" data-mode="off" class="secondary-btn">Voice Mode</button>
+            <button type="button" id="langBtn" aria-pressed="false" class="secondary-btn" title="Toggle Arabic">AR</button>
+            <span id="asrSpinner" class="spinner" aria-hidden="true"></span>
+            <span id="cpuLoad" class="cpu-load" style="display:none;"></span>
           </div>
-          <div class="partials-line" style="display:none;"></div>
+          <div class="voice-status-group">
+            <div class="status-line">
+              <span id="voiceStatus" class="voice-status" aria-live="polite">Voice idle</span>
+              <span id="voiceProgress" class="voice-progress"></span>
+              <span id="latencyStats" class="voice-progress"></span>
+            </div>
+            <div class="partials-line" style="display:none;"></div>
+          </div>
         </div>
       </div>
     </form>
-    <pre id="result" class="result-box" style="margin-top:1rem; max-height:200px; overflow:auto;"></pre>
+  </div>
+
+  <!-- Results -->
+  <div class="card">
+    <h3>Submission Result</h3>
+    <pre id="result" class="result-box"></pre>
   </div>
 </div>
+
 <script>
 // Inject survey questions from backend
 window.__SURVEY_QUESTIONS = JSON.parse(decodeURIComponent("{{ questions|tojson|urlencode }}"));
 </script>
+<script src="/static/js/survey_progress.js"></script>
 <script type="module" src="/static/js/survey_main.js"></script>
 {% endblock %}

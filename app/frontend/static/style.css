@@ -294,6 +294,7 @@ button:active {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  margin-top: 1rem;
 }
 
 .section-header {
@@ -433,16 +434,16 @@ button:active {
   color: var(--text);
 }
 
-.yes-btn:has(input:checked) {
-  background: #059669;
-  border-color: #059669;
-  color: #fff;
+.btn-option.selected.yes-btn {
+  background: #059669 !important;
+  border-color: #059669 !important;
+  color: #fff !important;
 }
 
-.no-btn:has(input:checked) {
-  background: #dc2626;
-  border-color: #dc2626;
-  color: #fff;
+.btn-option.selected.no-btn {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: #fff !important;
 }
 
 /* Multiple Choice Styles */
@@ -473,10 +474,10 @@ button:active {
   background: rgba(199, 154, 72, .1);
 }
 
-.choice-option:has(input:checked) {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: #fff;
+.choice-option.selected {
+  border-color: var(--accent) !important;
+  background: var(--accent) !important;
+  color: #fff !important;
 }
 
 .choice-score {
@@ -492,9 +493,9 @@ button:active {
   flex-shrink: 0;
 }
 
-.choice-option:has(input:checked) .choice-score {
-  background: #fff;
-  color: var(--accent);
+.choice-option.selected .choice-score {
+  background: #fff !important;
+  color: var(--accent) !important;
 }
 
 .choice-text {
@@ -639,18 +640,60 @@ button:active {
   background: var(--bg-alt);
   padding: .5rem 1rem;
   border-bottom: 1px solid var(--border);
+  border-radius: var(--radius-md);
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: .8rem;
+  gap: 1rem;
+}
+
+.language-toggle {
+  flex-shrink: 0;
+}
+
+.language-toggle * {
+  display: block !important;
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: .5rem .8rem;
+  border-radius: var(--radius-sm);
+  font-size: .75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.lang-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.lang-btn[data-lang="ar"] {
+  background: #059669;
+}
+
+.lang-btn[data-lang="ar"]:hover {
+  background: #047857;
+}
+
+.lang-icon {
+  font-size: .9rem;
 }
 
 .progress-bar {
   flex: 1;
   height: 4px;
   background: var(--border);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   margin: 0 1rem;
   overflow: hidden;
 }
@@ -658,9 +701,63 @@ button:active {
 .progress-fill {
   height: 100%;
   background: var(--accent);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   width: 0%;
   transition: width .3s ease;
+}
+
+/* RTL Mode Support */
+.rtl-mode {
+  direction: rtl;
+}
+
+.rtl-mode .survey-container {
+  direction: ltr; /* Keep form structure LTR */
+}
+
+.rtl-mode [data-lang="ar"] {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl-mode .q-title {
+  flex-direction: row-reverse;
+}
+
+.rtl-mode .section-header {
+  flex-direction: row-reverse;
+}
+
+.rtl-mode .yes-no-buttons {
+  flex-direction: row-reverse;
+}
+
+.rtl-mode .multiple-choice {
+  direction: rtl;
+}
+
+.rtl-mode .choice-option {
+  flex-direction: row-reverse;
+}
+
+/* Mobile responsive updates for language toggle */
+@media (max-width: 767px) {
+  .survey-progress {
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  
+  .language-toggle {
+    order: -1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .lang-btn {
+    padding: .6rem 1rem;
+    font-size: .8rem;
+  }
 }
 
 /* Voice block refined layout */
@@ -1150,4 +1247,64 @@ tbody tr:hover {
 
 .light #dbgPanel hr {
   border-top: 1px solid var(--border);
+}
+
+/* Light mode question card overrides */
+.light .question-card {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+.light .question-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px -1px rgba(199, 154, 72, .15);
+}
+
+.light .q-elaboration {
+  background: rgba(199, 154, 72, .08);
+  color: #5c5f5d;
+  border-left-color: var(--accent);
+}
+
+.light .btn-option {
+  background: var(--card);
+  color: #5c5f5d;
+  border-color: var(--border);
+}
+
+.light .btn-option:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.light .choice-option {
+  background: var(--card);
+  border-color: var(--border);
+  color: #5c5f5d;
+}
+
+.light .comment-section textarea {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.light .comment-section textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(199, 154, 72, .15);
+}
+
+.light .result-box {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.light .condition-note {
+  background: rgba(245, 158, 11, .08);
+  border-color: rgba(245, 158, 11, .25);
+}
+
+.light .condition-note small {
+  color: #d97706;
 }
