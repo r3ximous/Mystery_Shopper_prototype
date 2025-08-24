@@ -1,18 +1,18 @@
 from datetime import datetime
 from ..schemas.survey import SurveySubmissionIn, SurveySubmissionOut
 from ..core.security import sanitize_text
+from ..core.questions import get_questions
 from typing import List, Dict, Any
 
 _DB: List[SurveySubmissionOut] = []
 _COUNTER = 1
 
-QUESTIONS = {
-    "Q1": "Greeting professionalism",
-    "Q2": "Wait time satisfaction",
-    "Q3": "Resolution effectiveness",
-    "Q4": "Facility cleanliness",
-    "Q5": "Overall experience"
-}
+def get_questions_dict() -> Dict[str, str]:
+    """Get all questions as a dictionary for validation"""
+    questions = get_questions()
+    return {q['id']: q['text_en'] for q in questions}
+
+QUESTIONS = get_questions_dict()
 
 CHANNEL_WEIGHTS = {
     "CALL_CENTER": 1.0,

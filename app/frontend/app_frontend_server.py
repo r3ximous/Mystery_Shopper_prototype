@@ -27,7 +27,23 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 @frontend.get("/", response_class=HTMLResponse)
 async def survey_page(request: Request):
-    return templates.TemplateResponse("survey_form.html", {"request": request, "questions": get_questions()})
+    from ..backend.core.questions import get_questions, get_questions_by_category
+    questions = get_questions()
+    categories = get_questions_by_category()
+    return templates.TemplateResponse("survey_form_comprehensive.html", {
+        "request": request, 
+        "questions": questions,
+        "categories": categories
+    })
+
+@frontend.get("/simple", response_class=HTMLResponse) 
+async def simple_survey_page(request: Request):
+    from ..backend.core.questions import get_fallback_questions
+    questions = get_fallback_questions()
+    return templates.TemplateResponse("survey_form.html", {
+        "request": request,
+        "questions": questions
+    })
 
 @frontend.get("/admin", response_class=HTMLResponse)
 async def admin_page(request: Request):

@@ -1,0 +1,428 @@
+Criteria,Quet.Nr,Question,Elaboration on Question,Possible Answers,Type of visit,Skips & Triggers,Changes made,نوع الزيارة,الإجابات الممكنة,السؤال,رقم السؤال,معيار
+Center Access,Q0,"Was the service center location available on the Google map, the entity website, or signboards on the roads?","- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,The question was rephrased,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان من السهل تحديد موقع تقديم الخدمة عن طريق موقع قوقل، أو موقع الجهة، أو اللوحات الإرشادية في الطريق؟,Q0,الوصول لمركز الخدمة
+Center Access,Q1,"Were the directions on signboards, at the entrance, clear enough to guide you of where to go (Parking, main entrance..)?","- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كانت الارشادات على اللوحات، في المدخل، واضحة بشكل كافي لتعرف طريقك (من  موقف سيارات والمدخل الرئيسي)؟,Q1,الوصول لمركز الخدمة
+Facilities Parking,Q3,Did the entity provide enough parking spaces (self-parking or valet)?,"- Please check for empty parking slots
+- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3.There was a valet (1)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3.توفرت خدمة صف السيارات (1)
+",هل وفرت الجهة مواقف سيارات كافية (مواقف ذاتية او Valet)؟,Q3,مواقف السيارات
+Premises Exterior,Q6,Was the exterior area around the building clean and well maintained?,"- No paper, plastic bags, and other rubbish on the floor nothing that requires fixing or repair
+- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry,,,استفسار,"1. نعم (1)
+2.لا (0) ",هل كان محيط المبـنى الخارجي نظيفا وفي حالة جيدة؟,Q6,المبنى الخارجي
+"Premises Interior ",Q9,Was there a directional signboard at the entrance of the building or inside the lobby clearly identifying the concerned department?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان هناك لوحات إرشادية عند مدخـل المبنى أو داخل قاعة الاستقبـال تشيـر بوضوح إلى اتجــاه القسـم المطلوب؟,Q9,المبنى من الداخل
+"Premises Interior ",Q10,Was the service center working hours mentioned clearly on the signboards?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry,,,استفسار,"1. نعم (1)
+2.لا (0) ",هل ذكرت اللوحات الارشادية أوقات عمل مركز الخدمة بوضوح؟,Q10,المبنى من الداخل
+"Premises Interior ",Q11,Were the inner premises of the center including the entrance clean?,"- No paper, plastic bags, and other rubbish on the floor
+- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان المركز بما في ذلك المدخل نظيفا؟,Q11,المبنى من الداخل
+"Premises Interior ",Q12,Was the center including the entrance crowded?,"- Exceeding the capacity of the center, no enough empty seatings, difficulty moving around due to people blocking hallways or entrances, extended queues, customers are waiting outside the building, etc.
+- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (0)
+2.No (1)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (0)
+2.لا (1) ",هل كان المركز بما فيه المدخل مزدحمًا؟,Q12,المبنى من الداخل
+"Premises Interior ",Q12.0,"Was the center's atmosphere comfortable : adequate lighting and temperature, nice smell ….?","Please check: Temperature (not too cold, not too hot) Lighting (not too bright, not too gloomy) Smell (not bad odor)
+If no, detail what happened and provide evidence (if applicable)","1.Yes (1)
+2.No (0)",Enquiry,,,استفسار,"1. نعم (1)
+2.لا (0) ",هل كان جو المركز مريح: إضاءة ودرجة حرارة ملائمان وعدم وجود روائح كريهة….؟,Q12.0,المبنى من الداخل
+"Premises Interior ",Q15,Were fire exists marked and visible?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry,,The question was rephrased,استفسار,"1. نعم (1)
+2.لا (0) "," هل كان مخرج الطوارئ موجودا ومرئيا؟",Q15,المبنى من الداخل
+"Premises Interior ",Q16,Were there any safety concerns in the center?,"- Wet floor, broken tiles, no warning signs for renovations, etc.
+- If yes, detail what happened and provide evidence","1.Yes (0)
+2.No (1)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (0)
+2.لا (1)","هل كانت هناك أي مخاوف تتعلق بالسلامة في المركز؟ - الأرضية مبللة، البلاط مكسور، لا يوجد علامات تحذيرية  للتجديدات الخ .. ",Q16,المبنى من الداخل
+"Premises Interior ",Q17,Was there a prayer area available at the service center?,"- In case the prayer area was not inside the service center a signboard should be available to indicate the location of the payer room
+- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+",هل يتوفر مكان للصلاة في موقع تقديم الخدمة؟,Q17,المبنى من الداخل
+"Premises Interior ",Q18,Were there restrooms available for your use for ladies and gents?,"- Please provide evidence
+- If no, detail what happened in the comment box","1. Yes, both were available (1)
+2. Only Ladies/ Gents restrooms were available (0)
+3. No (0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.فقط للسيدات / فقط للرجال (0)
+3.لا (0) 
+",هل كان هناك دورات مياه متوفرة للاستخدام للرجال والنساء؟,Q18,المبنى من الداخل
+"Premises Interior ",Q19,"Were the restrooms clean, well maintained and adequately stocked?","- Nothing was needed (repair/fixing), availability of soap, toilet paper and tissues, cleaniless of floor and/or surfaces, etc.
+- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q18 is 1 or 2,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كانت الحمامات نظيفة ،في حالة جيدة ومجهزة بشكل كاف؟,Q19,المبنى من الداخل
+"Premises Interior ",Q21,"Are there any special toilets for the people of determination, which are being used efficiently and effectively?","- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل يوجد دورات مياه مخصّصة لأصحاب الهمم قابلة للاستخدام؟,Q21,المبنى من الداخل
+"Premises Interior ",Q21.0,Was the counter of receptionist and the surrounding area clean and tight?,"- No personal belongings, cell phone, cups etc.
+- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3. I did not meet the receptionist(s) at their desk (N/A)",Enquiry/ Transaction,show if Q34 is 1 or 2 or 3,The options were updated,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3. لم أقابل موظف الاستقبال عند مكتبه ",هل كان كاونتر موظف الإستقبال والمنطقة المحيطة به نظيف ومرتب؟,Q21.0,المبنى من الداخل
+"Premises Interior ",Q21.1,Was the counter of the customer service employee and the surrounding area clean and tight ?,"- No personal belongings, cell phone, cups etc.
+- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3. I did not meet the employee(s) at their desk (N/A)",Enquiry/ Transaction,show if Q51 is yes,The options were updated,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3. لم أقابل موظف الخدمة عند مكتبه ",هل كان كاونتر موظف خدمة المتعاملين والمنطقة المحيطة به نظيف ومرتب؟,Q21.1,المبنى من الداخل
+Waiting Area,Q22,Was there a designated seating area to sit while waiting?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.The seatings are full (0)
+3.There was no designated waiting area (0)",Enquiry/ Transaction,,The question and options were rephrased,استفسار / تقديم معاملة,"1. نعم (1)
+2.كانت المقاعد ممتلئة (0) 
+3. لم يكن هناك منطقة مخصصة للانتظار (0)",هل كانت هناك منطقة مخصصة للجلوس أثناء الانتظار؟,Q22,قاعة الانتظار
+Waiting Area,Q23,Was there a separate waiting/ seating area for ladies/ gents?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry,show if Q22 is 1 or 2,,استفسار,"1. نعم (1)
+2.لا (0) ",هل كان هناك منطقة انتظار منفصلة للرجال والسيدات؟,Q23,قاعة الانتظار
+Waiting Area,Q25,Was there a queuing system in working condition? i.e. Token numbers or equivalent.,"- Token machine, screen, voice announcement, SMS, etc.
+- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes - there was a working queue machine(1)
+2.No - there was a non-working queue machine(0)
+3. No - there was no queue machine availble(0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم - يوجد نظام للانتظار يعمل (1)
+2.لا - يوجد نظام للانتظار لكن لا يعمل (0) 
+3لا - لم يتوفر نظام للانتظار (0)",هل توفر نظام للاتظار وكان يعمل؟ رقم التوكن أو ما يعادلها.,Q25,قاعة الانتظار
+Waiting Area,Q25.1,"If it was not working, was there any sign to warn that it is not working?","- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/Transaction,show if Q25 is 2,,استفسار/تقديم معاملة,"1. نعم (1)
+2.لا (0) ",إذا كان نظام الانتظار لا يعمل، هل تم وضع أي ملصق أو  لافتة توضح أن النظام معطل؟,Q25.1,قاعة الانتظار
+Waiting Area,Q25.2,"If the queuing system was not available or not working, was there an alternative system in place to serve the customers that arrive first before those that arrive later? ",,"1.Yes (1)
+2.No (0)",Enquiry/Transaction,show if Q25 is 3,,استفسار/تقديم معاملة,"1. نعم (1)
+2.لا (0) ",في حال لم يتوفر نظام الانتظار أو كان لا يعمل،  هل كان هناك نظام بديل موجود لخدمة العملاء الذين يصلون أولاً قبل الذين يصلون في وقت لاحق؟,Q25.2,قاعة الانتظار
+Waiting Area,Q26.0,Did you find the service you were looking for on the queue system?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3. I did not use the machine (non-scoring)
+",Enquiry/ Transaction,,The question and options were amended,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0)  
+3. لم أستخدم نظام الانتظار ",هل وجدت الخدمة التي كنت تبحث عنها في نظام تنظيم الدور؟,Q26.0,قاعة الانتظار
+Waiting Area,Q26,Were people skipping others in the queue and taking their place?,"If yes, detail what happened in the comment box","1.Yes (0)
+2.No (1)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (0)
+2.لا (1) ",هل كان هنالك من يتخطى الآخرين في قائمة الانتظار ويحل مكانهم؟,Q26,قاعة الانتظار
+Waiting Area,Q27,Were there computers/ ipads or any similar devices to serve customers available in the waiting area and in working condition?,"- If the computers were available AND in working condition
+- Please provide evidence
+- If not working or not available, explain in the comment box","1.Available and wroking (1)
+2.Available but not working (0)
+3.Not available (0)",Enquiry,,The options were amended,استفسار,"1. موجودة وتعمل (1)
+2. موجودة، لكن لا تعمل (0)
+3. غير موجودة (0) ",هل كانت أجهزة كمبيوتر أو أجهزة لوحية أو ما يعادلها متوفرة في منطقة الانتظار لخدمة المتعاملين وتعمل في حالة جيدة؟,Q27,قاعة الانتظار
+People of Determination,Q27.1,Is there a designated parking area for People of Determination near the entrance?,"- Check if there is at least 1-2 designated POD parking per entrance
+- If the POD parking was full, check the availability of other empty slots or solutions, as alternatives
+- Please detail what happened and provide evidence","1.Yes (1)
+2.No (0)
+3.There was a valet (1)",Enquiry/ Transaction,,Question rephrased & instruction added,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3. يوجد خدمة صف السيارات (1)","هل هناك مواقف كافية مخصصة لأصحاب الهمم؟ ",Q27.1,ذوي الهمم
+People of Determination,Q27.2," Was the accessibility from the allocated parking for people of determination to the entrance obstacle-free?","- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم 
+2.لا (0) ","هل كان  الوصول من المواقف المخصصة لأصحاب الهمم إلى مدخل  المركز خاليا من اي عائق؟ ",Q27.2,ذوي الهمم
+People of Determination,Q27.3,"Is there at least one entrance suitable to people of determination? ","- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,separated into 2 questions,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ","هل هنالك مدخل واحد على الأقل مهيأ لأصحاب الهمم؟ ",Q27.3,ذوي الهمم
+People of Determination,Q27.3.1,Is at least one of the POD entrances a main entrance?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q27.3 is yes,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان واحد على الأقل من هذه المداخل من المداخل الرئيسية؟,Q27.3.1,ذوي الهمم
+People of Determination,Q27.3.2,Is the entrance wide enough to accommodate wheelchairs or mobility devices?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان المدخل واسعًا بما يكفي لمرور الكراسي المتحركة أو أجهزة المساعدة على الحركة؟,Q27.3.2,ذوي الهمم
+People of Determination,Q27.3.3,Were automatic door openers available and functioning correctly?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كانت هناك أبواب أوتوماتيكية تعمل بشكل صحيح؟,Q27.3.3,ذوي الهمم
+People of Determination,Q27.3.4,Were tactile floor indicators available to guide People of Determination to the service counter?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل توفرت مؤشرات ملموسة على الأرض لإرشاد أصحاب الهمم إلى مكتب الخدمة؟,Q27.3.4,ذوي الهمم
+People of Determination,Q27.4,"In case there was an operating queue machine, were digital queue displays accompanied by audio announcements for visually impaired visitors?","- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q25 is 1,question was rephrased,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0)",في حال توفر نظام للانتظار (التوكن)، هل كانت شاشات عرض الأرقام الرقمية مصحوبة بإعلانات صوتية لمساعدة الزوار من ذوي الإصابات البصرية؟,Q27.4,ذوي الهمم
+People of Determination,Q27.5,Were counter heights adjustable or low enough (≤hight ) for wheelchair users or any specific initiatives implemented to assist POD if the counters heights were not adjustable?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,question was rephrased,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0)",هل كانت ارتفاعات مكاتب الخدمة قابلة للتعديل أو منخفضة بما يكفي (≤ الارتفاع المطلوب) لتناسب مستخدمي الكراسي المتحركة؟ وإذا لم تكن كذلك، فهل تم تنفيذ أي مبادرات خاصة لدعم أصحاب الهمم؟,Q27.5,ذوي الهمم
+People of Determination,Q27.6,"Were ramps, elevators, or other access tools available and in working condition?","- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3.Not Applicable (non-scoring)",Enquiry/ Transaction,,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0)",هل توفرت منحدرات أو مصاعد أو أدوات وصول أخرى، وهل كانت بحالة تشغيل جيدة؟,Q27.6,ذوي الهمم
+People of Determination,Q27.7,"Were elevators available with Braille buttons, audio announcements, and low-height controls?","- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3.The center is located on the ground floor with no additional floors (non-scoring)",Enquiry/ Transaction,,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0)
+3. المركز يقع في الطابق الأرضي ولا توجد طوابق إضافية ",هل توفرت مصاعد تحتوي على أزرار بلغة برايل، وإعلانات صوتية، ولوحات تحكم على ارتفاع مناسب؟,Q27.7,ذوي الهمم
+People of Determination,Q27.8,"Were dedicated toilets equipped with grab bars, emergency alarms, and wheelchair-accessible stalls?","- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q21 is yes,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0)",هل كانت دورات المياه المخصصة لذوي الهمم مجهزة بمقابض دعم، وإنذارات طوارئ، وحمامات يمكن للكراسي المتحركة دخولها؟,Q27.8,ذوي الهمم
+People of Determination,Q27.9,"Were alternative formats  for service information available for menus, brochures, or other information (e.g., braille, large print)?","- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q30 is yes,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0)",هل كانت هناك صيغ بديلة لمعلومات الخدمة (مثل القوائم والكتيبات) متاحة بلغة برايل أو بحجم خط كبير؟,Q27.9,ذوي الهمم
+People of Determination,Q27.10,Did staff offer immediate assistance upon noticing a visitor with special needs?,"- Shopper should notice such instance, if any
+- Please detail what happened","1.Yes (1)
+2.No (0)
+3.Not Applicable (non-scoring)",Enquiry/ Transaction,,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0)
+3.لا ينطبق ",هل بادر الموظفون بتقديم المساعدة فور ملاحظتهم لزائر من أصحاب الهمم؟,Q27.10,ذوي الهمم
+People of Determination,Q27.11,"Were staff trained to communicate with POD (e.g., basic sign language, clear verbal instructions)?","- Shopper should notice such instance, if any
+- Please detail what happened","1.Yes (1)
+2.No (0)
+3.Not Applicable (non-scoring)",Enquiry/ Transaction,,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0)
+3.لا ينطبق ",هل كان الموظفون مدربون على التواصل مع ذوي الهمم (مثل استخدام لغة الإشارة الأساسية أو إعطاء تعليمات لفظية واضحة)؟,Q27.11,ذوي الهمم
+Service Accessibility,Q28,Was the security or any other employee available to guide the customers at the token machine or to direct to the proper department/ service desk?,Please detail what happened,"1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ","هل تواجد موظف الأمن أو موظف آخر لمساعدة المتعاملين على استخدام نظام الانتظار أو توجيههم إلى القسم المعني؟ ",Q28,سهولة الوصول للخدمة
+Service Accessibility,Q29,Was the reception/ information desk immediately visible on entering the building?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry,show if Q34 is 1 or 2 or 3,,استفسار,"1. نعم (1)
+2.لا (0) ",هل كان مكتب الاستقبال/ الاستعلامات ظاهر / مرئي مباشـرة عند الدخول إلى المبـنى؟,Q29,سهولة الوصول للخدمة
+Service Accessibility,Q30," Was the information about the services available in both languages Arabic and English and easy to access by the customer through Smart screens, flyers, or brochures, QR-CODE...?","- If the information about the service was available AND easy to access
+- If no, please specify whether the information was not available or was not easy to access
+- Please provide evidence","1.Yes (1)
+2.Only one language (0)
+3.No (0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لغة واحدة (0)
+3.لا (0) ",هل كانت المعلومات حول الخدمات متوفرة في مركز الخدمة  بأكثر من لغة وسهل الوصول إليها من قبل المتعامل من خلال لوحات العرض الذكية  أو QR-CODE أو غيره؟,Q30,سهولة الوصول للخدمة
+Service Accessibility,Q32,Was the customer charter displayed clearly?,"- Please provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry,,question in English version was rephrased,استفسار,"1. نعم (1)
+2.لا (0) ",هل كان ميثاق خدمة المتعاملين معروض بشكل مرئي وبوضوح للمتعاملين؟,Q32,سهولة الوصول للخدمة
+Receptionist Soft Skills,Q34,Was the reception/ information desk staff available at the reception desk?,,"1.Yes (1)
+2.No staff was available (0)
+3. NA - The staff was available but I did not interact with any (non-scoring)
+4. NA - There was no reception desk (non-scoring)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا- لم يتواجد موظف (0) 
+3.لاينطبق - تواجد موظف ولكنني لم أتعامل معه 
+4. لا ينطبق - لا يوجد مكتب استقبال في المركز  ",هل تواجد موظف الاستقبال في مكتب الاستقبال/ الاستعلامات؟,Q34,المهارات الشخصية لموظف الاستقبال
+Receptionist Soft Skills,Q37,Was the receptionist presentable with good appearance?,"Attention !!The employee has to be well groomed with a professional looking
+
+Check dress code: For UAE Nationals Males and Females: Official UAE national dress // For Expatriates Males: Officials suites with tie in dark colors // For Expatriates Females: Official suits with long sleeves jackets and loose fitting trousers or skirts that extend below the knee
+For Dubai Police military uniforms","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q34 is 1,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان مظهر موظف الاستقبال جيد؟,Q37,المهارات الشخصية لموظف الاستقبال
+Receptionist Soft Skills,Q38,Were you able to identify the receptionist’s name in any way?,"The ID badge, a plate with the employee’s name on the desk, and asked him for his name..If no, please mention if the badge ID was not available or the name was not clear","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q34 is 1,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) "," هل استطعت التعرف على اسم الموظف باي طريقة كانت؟ (حمل الموظف لبطاقة فيها اسمه، لوحة باسم الموظف على المكتب، سألته عن اسمه) ",Q38,المهارات الشخصية لموظف الاستقبال
+Receptionist Soft Skills,Q39,Was the receptionist polite and courteous?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q34 is 1,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ","هل كان موظف الاستقبال مؤدب ولبق؟  
+",Q39,المهارات الشخصية لموظف الاستقبال
+Receptionist Soft Skills,Q40,Was the receptionist able to communicate in the language you spoke (English or Arabic)?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q34 is 1,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان موظف الاستقبال قادرًا على التواصل باللغة التي تتحدثها (الإنجليزية أو العربية)؟,Q40,المهارات الشخصية لموظف الاستقبال
+Receptionist Soft Skills,Q42,"Was the receptionist fully attentive when dealing with you? i.e. they did not chat with others, used the phone, or did things that are not related to your query","If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q34 is 1,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان موظف الاستقبال مهتم عند التعامل معك؟ أي لم يتحدث مع الآخرين، استخدم الهاتف، أو قام بأشياء بأمور ليس لها علاقة باستفسارك,Q42,المهارات الشخصية لموظف الاستقبال
+Receptionist Soft Skills,Q42.1,"In case of not being fully attentive, did the employee apologize and excuse himself/herself?","If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)                        ",Enquiry/ Transaction,show if Q42 is no,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",في حال حدوث أي انقطاع أثناء المعاملة ، هل اعتذر موظف الاستقبال؟,Q42.1,المهارات الشخصية لموظف الاستقبال
+Receptionist knowledge,Q43,Did the receptionist understand your requirement?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q34 is 1,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل فهــم موظف الاستقبال احتياجاتك / طلبك؟,Q43,معرفة موظف الاستقبال
+Receptionist knowledge,Q44,Was the receptionist able to answer your inquiries and to explain the requirements of service delivery?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3.The receptionist directed me to the employee (non-scoring)",Enquiry/ Transaction,show if Q34 is 1,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3. موظف الاستقبال حولني للموظف المعني",هل كــان موظف الاستقبال قادراً على الإجابة على استفساراتك وشرح متطلبات تقديم الخدمة؟,Q44,معرفة موظف الاستقبال
+Receptionist knowledge,Q46,Did the employee direct you to the proper person to handle your enquiry?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3.The receptionist gave me all the infomration (non-scoring)",Enquiry/ Transaction,show if Q34 is 1,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3. لا ينطبق - قام وظف الاستقبال بتزويدي بجميع المعلومات",هل وجهك موظف الاستقبال إلى الشخص المناسب للتعامل مع استفسارك؟,Q46,معرفة موظف الاستقبال
+Customer service employee soft Skills,Q51,Was the customer service employee available?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3.I did not need to be served by a Customer Service Employee.",Enquiry/ Transaction,,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3. لم أحتج إلى خدمة موظف خدمة العملاء.",هل كان موظف الخدمة متواجدا,Q51,المهارات الشخصية لموظف خدمة المتعاملين
+Customer service employee soft Skills,Q52,Was the customer service employee presentable and with good appearance?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q51 is yes,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان مظهر موظف خدمة المتعاملين جيد؟,Q52,المهارات الشخصية لموظف خدمة المتعاملين
+Customer service employee soft Skills,Q53,Were you able to identify the employee’s name in any way?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q51 is yes,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) "," هل استطعت التعرف على اسم موظف خدمة المتعاملين باي طريقة كانت؟ (حمل الموظف لبطاقة فيها اسمه، لوحة باسم الموظف على المكتب، سألته عن اسمه) ",Q53,المهارات الشخصية لموظف خدمة المتعاملين
+Customer service employee soft Skills,Q54,Was the customer service employee polite and courteous?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q51 is yes,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان الموظف مؤدب ولبق؟,Q54,المهارات الشخصية لموظف خدمة المتعاملين
+Customer service employee soft Skills,Q55,Was the customer service employee able to communicate in the language you spoke (English or Arabic only)?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q51 is yes,question rephrased,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان الموظف قادر على التواصل معك باللغة التي تكلمت بها (اللغة العربية أو الانجليزية فقط)؟,Q55,المهارات الشخصية لموظف خدمة المتعاملين
+Customer service employee soft Skills,Q56,"Was the customer service employee fully attentive when dealing with you? i.e. they did not chat with others, used the phone, or did things that are not related to your query, did not leave his/her desk","If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q51 is yes,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان موظف خدمة المتعاملين مهتم عند التعامل معك؟ أي لم يتحدث مع الآخرين، استخدم الهاتف، أو غادر  مكتبه لسبب لا علاقة له بمعاملتك، أو قام بأشياء بأمور ليس لها علاقة باستفسارك,Q56,المهارات الشخصية لموظف خدمة المتعاملين
+Customer service employee soft Skills,Q59,"In case there was any interruption during your transaction, did the customer service employee apologize and excuse himself/herself?","If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)                        ",Enquiry/ Transaction,show if Q51 is yes,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",في حال حدوث أي انقطاع أثناء المعاملة ، هل اعتذر موظف خدمة المتعاملين؟,Q59,المهارات الشخصية لموظف خدمة المتعاملين
+Customer service employee knowledge,Q60,"Did the customer service employee ask you relevant questions to understand your enquiry/ service requirement better, if needed?","If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q51 is yes,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل طرح عليك موظف خدمة المتعاملين أسئلة ملائمة لفهم استفسارك أو الخدمة المطلوبة بشكل أفضل، إذا لزم الأمر؟,Q60,معرفة موظف خدمة المتعاملين
+Customer service employee knowledge,Q61,"Was the customer service employee able to answer your inquiries and help you avail your service? ","If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,show if Q51 is yes,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كــان موظف خدمة المتعاملين قادر على الإجابة على استفساراتك وشرح متطلبات تقديم الخدمة؟,Q61,معرفة موظف خدمة المتعاملين
+Speed of Service,Q65,How long did you have to wait to talk to the receptionist?,Please mention the exact time from the moment you reached the reception area until you were approached by the receptionist,"1. Up to 3 minutes (3)
+2.3-5 minutes (1)
+3. More than 5 minutes (0)",Enquiry/ Transaction,Show if Q34 is yes,,استفسار / تقديم معاملة,"1. حتى 3 دقائق (3)
+2. 5-3 دقائق (1)
+3. أكثر من 5 دقائق (0)
+4. لا ينطبق  ",كم من الوقت كان عليك الانتظار للتحدث مع موظف الاستقبال؟,Q65,سرعة الخدمة
+Speed of Service,Q66,In average how long was your waiting time to meet the customer service employee?,Please mention the exact time from the moment the receptionist directed you to the CSE until you met the employee,"1. Up to 3 minutes (3)
+2. Within 5 minutes (2)
+3. 5-10 minutes (1)
+4. More than 10 minutes (0)",Enquiry/ Transaction,show if Q51 is yes,,استفسار / تقديم معاملة,"1. حتى 3 دقائق (3)
+2.خلال 5 دقائق (2)
+3. 10-5 دقائق (1)
+4. أكثر من 10 دقائق (0)",بشكل عام ​​، ما هي مدة الانتظار لمقابلة موظف خدمة المتعاملين؟,Q66,سرعة الخدمة
+Speed of Service,Q66.1,"In average how long did it take to finish your transaction process (application submission, payment if required, and transaction approval receipt)? ",Please mention the exact time,"1. Up to 10 minutes (2)
+2.  10 -30 minutes (1)
+3. More 30 minutes (0)",Transaction,,,تقديم معاملة,"1. حتى 10 دقائق (2)
+2. 10-20 دقيقة (1)
+3. أكثر من 20 دقيقة (0)",كم  استغرقت معاملتك  وقتا لإتمامها بشكل كامل؟ (تقديم الطلب والدفع وتأكيد إتمام الخدمة بنجاح),Q66.1,سرعة الخدمة
+Speed of Service,Q66.2,Was the entity able to deliver the service (outcome of your requests) on the promised timeframe?,Please mention the exact time,"1.Yes (2)
+2.No (0)
+3.Not Applicable (non-scoring)",Transaction,,,تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل تمكنت من الحصول على الخدمة (المخرج النهائي) ضمن الإطار الزمني الذي تم إخبارك به؟,Q66.2,سرعة الخدمة
+Ease of use,Q67.0,Did you get the service/enquiry completed from the first visit to the centre (without requiring another visit)?,If more than 2 please consider the employee you interacted with the most,"1.Yes (1)
+2.No (0)
+3.Not Applicable (non-scoring)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (0)
+2.لا (1) ",هل حصلت على الخدمة المطلوبة أو المعلومات التي احتجتها من الزيارة الأولى دون الحاجة لزيارة أخرى؟,Q67.0,سهولة إتمام الخدمة
+Ease of use,Q67,"Apart from the receptionist, did you have to interact with more than one employee to get your inquiry or transaction completed?","If no, detail what happened in the comment box","1.Yes (0)
+2. No (1)","Transaction/ Enquiry ",,applicable for enquiry as well,استفسار / تقديم معاملة,"1. نعم (0)
+2.لا (1) ",عدى عن موظف الاستقبال، هل اضطررت للتعامل مع أكثر من موظف لإنجاز استفسارك أو معاملتك ؟,Q67,سهولة إتمام الخدمة
+Ease of use,Q68,"Was there additional services available for your use whether paid or unpaid? If required ","- Services available and in working condition
+- Please provide details and evidence","1.Yes (1)
+2.No (0)
+3.Not Required (non-scoring)","Enquiry
+",,question rephrased and options amended,"استفسار
+","1. نعم (1)
+2.لا (0) 
+3.غير مطلوب",هل كان هناك خدمات مساندة متوفرة للاستخدام سواء كانت مجانية أو غير مجانية / يدفع لها؟ في حال الحاجة لذلك,Q68,سهولة إتمام الخدمة
+Ease of use,Q68.1,Were your service requirements reviewed at the first contact point to make sure that you had all the requirements to avail the service?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Transaction,,,تقديم معاملة,"1. نعم (1)
+2.لا (0) ","هل تمت مراجعة وثائقك في البداية عند دخولك مركز الخدمة للتأكد من توفر جميع المتطلبات اللازمة للاستفادة من الخدمة.؟
+",Q68.1,سهولة إتمام الخدمة
+Ease of use,Q68.2,"If you were asked to apply through the website, mobile application, or self-service screens, did the service representative help or guide you if you requested assistance?","If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3. Not Applicable (non-scoring)",Transaction,,,تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3.لاينطبق ",إذا تم الطلب منك التقدم عن طريق الموقع الالكتروني أو التطبيق الالكتروني أو جهاز الخدمة الذاتية، هل قام ممثل الخدمة بمساعدتك أو إرشادك في حال قمت بطلب المساعدة؟,Q68.2,سهولة إتمام الخدمة
+Ease of use,Q69,"Were you able to pay in different payment methods i.e. cash, credit card, cheque etc.?","If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3.Not Applicable (non-scoring)",Transaction,,,تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3.لاينطبق ",هل كنت قـادر على أن تدفـع بطرق مختلفة أي  نقداً، بطاقة ائتمان، شيك، الخ؟,Q69,سهولة إتمام الخدمة
+Ease of use,Q70,Were you able to make the payment without being asked to go to another desk/ counter?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3.Not Applicable (non-scoring)",Transaction,,,تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3.لاينطبق ",هل كنت قادرًا على إجراء الدفع دون مطالبتك بالذهاب إلى مكتب / مكتب آخر؟,Q70,سهولة إتمام الخدمة
+Ease of use,Q70.0,"Was the service and payment fully completed and without errors occurring in the system, whether in submitting the order or paying?","If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3.Not Applicable (non-scoring)",Transaction,,,تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3.لاينطبق ",هل تم التقدم للخدمة والدفع بشكل تام وبدون حصول أخطاء في النظام سواء في التقدم للطلب أو في الدفع؟,,سهولة إتمام الخدمة
+Ease of use,Q71,Was there WIFI service available and working properly in the center?,"-Provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ","هل توجد خدمة ""واي فاي"" متوفرة وتعمل بشكل صحيح في المركز؟ ",Q71,سهولة إتمام الخدمة
+Ease of use,Q72,"Were there any posters, or signboards indicating the availability of a complaint system and indicating that the department will solve your complaint in 5 days or less? (Either Campaigns, Posters, Signboards, Brochures, Digital boards or any others )","Provide evidence
+","1. Available with the response time (5 days or less) (1)
+2. Available with the response time (more than 5 days) (0)
+3. Available with no response time (0)
+4. Not Available (0)",Enquiry/ Transaction,,to be deleted,استفسار,"1. متوفر مع ذكر وقت الرد (5 أيام أو أقل) (1)
+2. متوفر مع ذكر وقت الرد (5 أيام أو أكثر) (0)
+3. متوفر بدون ذكر وقت الرد (0)
+4.غير متوفر أبدا (0) ",هل كان هناك اعلان عن وجود نظام لتلقي شكاوى المتعاملين مع تحديد  أن الشكوى سوف يتم حلها خلال 5 أيام أو أقل من تاريخ تقديمها ؟ سواء حملات اعلانية أو ملصقات أو لوحات إعلانية أو كتيبات أو لوحات ذكية أو غيره تعبر عن وجود نظام لتلقي شكاوى المتعاملين,Q72,سهولة إتمام الخدمة
+Ease of use,Q72,"Was the 04 platform for submitting complaints, suggestions, and feedback available during your visit?","-Provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كانت منصة 04 (الشكاوى، الاقترحات، الملاحظات) متاحة؟,Q72,سهولة إتمام الخدمة
+Ease of use,Q72.1,"Was the process for submitting a complaint through the 04 platform clearly communicated via posters, digital screens, or any other display methods at the service location?","-Provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,hide if Q72 is no,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان من الواضح كيفية تقديم شكوى على منصة 04 من خلال الملصقات، الشاشات الرقمية أو أي وسيلة عرض أخرى في موقع الخدمة؟,Q72.1,سهولة إتمام الخدمة
+Ease of use,Q72.2,"Was it easy to access the 04 platform and submit feedback or complaints using the QR code, website, or mobile app?","-Provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,hide if Q72 is no,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان من السهل الوصول إلى منصة 04 وتقديم الملاحظات أو الشكاوى باستخدام رمز الاستجابة السريعة، الموقع الإلكتروني، أو التطبيق؟,Q72.2,سهولة إتمام الخدمة
+Ease of use,Q72.3,"If a complaint was made during the visit and the customer chose not to use the 04 platform, did the receptionist or service employee either record it in the 04 system on their behalf or resolve it on the spot?","-Provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3. I did not submit a complaint (non-scoring)",Enquiry/ Transaction,,new question,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3. لم يتم تقديم شكوى",إذا تم تقديم شكوى خلال الزيارة، وفي حال عدم رغبة المتعامل استخدام 04، هل قام موظف الاستقبال/أو موظف الخدمة بتسجيلها مباشرة في نظام 04 نيابةً عن المتعامل، أو حلها في نفس الوقت؟,Q72.3,سهولة إتمام الخدمة
+Ease of use,Q73,Was it easy to file a complaint in the service center?,"-Provide evidence
+- If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)
+3.Not Applicable (non-scoring)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3.لاينطبق ",هل كان من السهل تقديم طلب شكوى داخل المركز؟,Q73,سهولة إتمام الخدمة
+Service Information Quality,Q74,Did the customer service employee provide you with proper information on how to avail the required service?,,,Enquiry/ Transaction,,,استفسار / تقديم معاملة,,هل قام موظف خدمة المتعاملين بتزويدك بالمعلومات المناسبة حول كيفية الحصول على الخدمة المطلوبة؟,Q74,جودة معلومات الخدمة
+Service Information Quality,Q75,Were the documents required relevant?,,"1.Yes (2)
+2.No (0)
+3. Not Applicable (non-scoring)",Enquiry/ Transaction,,to be deleted,استفسار / تقديم معاملة,"1. نعم (2)
+2.لا (0) ",هل كانت الوثائق المطلـوبة ملائمة؟,Q75,جودة معلومات الخدمة
+Service Information Quality,Q75.0,Was the information provided by the employees regarding the requested service consistent with the information available on the website?,"If yes/ no, detail what happened
+Take screenshots from website","1.Yes (1)
+2.No (0)
+3.The information was not available on the website (0)",Enquiry/ Transaction,,options amended,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3. لم يتم العثور على الخدمة في الموقع (0)",هل كانت المعلومات المقدمة من قبل موظف الجهة عن الخدمة المطلوبة متوافقة مع المعلومات المتوفرة على الموقع؟,Q75.0,جودة معلومات الخدمة
+Service Information Quality,Q77,"At the end of waiting in the queue, did you find yourself in the wrong queue due to wrong information from staff members or signboards?","If yes, detail what happened in the comment box","1.Yes (0)
+2.No (2)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (2)
+2.لا (0) ",وأخيـرا بعد الانتظار في الطابور، هل وجدت نفسك في الطابور الخطأ نتيجة لمعلومات خاطئة من الموظفين أو اللوحات الإرشادية؟,Q77,جودة معلومات الخدمة
+Service Information Quality,Q78,Were you informed about the different options of payments for your transaction?(whether through the service employee or any other communication channels),,"1.Yes (2)
+2.No (0)
+3. Not Applicable (non-scoring)",Transaction,,,تقديم معاملة,"1. نعم (2)
+2.لا (0)       ",هل تم اعلامك بالخيارات المختلفة لدفع الرسوم الخاصة بمعاملتك؟ (سواء من خلال موظف الخدمة أو أي من قنوات التواصل الأخرى),Q78,جودة معلومات الخدمة
+Service Information Quality,Q79,"Were you informed about the different channels where you could collect the outcome of your requests ( card/license, certificate..)? (whether through the service employee or any other communication channels)","If no, detail what happened in the comment box","1.Yes (2)
+2.No (0)
+3. Not Applicable (non-scoring)",Transaction,,,تقديم معاملة,"1. نعم (2)
+2.لا (0) ",هل تم اعلامك عن القنوات المختلفة التي يمكنك من خلالها الحصول على المخرجات النهائية للخدمة (بطاقة / رخصة ، شهادة ..)؟ (سواء من خلال موظف الخدمة أو أي من قنوات التواصل الأخرى),Q79,جودة معلومات الخدمة
+Service Information Quality,Q80,Did the employee provide you with the reference number related to your transaction?,"If no, detail what happened in the comment box","1.Yes (2)
+2.No (0)
+3. Not Applicable (non-scoring)",Transaction,,,,,,Q80,جودة معلومات الخدمة
+Service Information Quality,Q80.1,"Upon the payment, did you receive a receipt (physical or digital) confirming the payment process, showing the full payment structure?","If no, detail what happened in the comment box","1.Yes (2)
+2.No (0)
+3. Not Applicable (non-scoring)",Transaction,,question rephrased,تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3. الخدمة مجانية",هل تم تزويدك بوصل ورقي أو الكتروني يثبت عملية الدفع؟,Q80.1,جودة معلومات الخدمة
+Service Information Quality,Q80.2,"If the final outcome (card/license, certificate...) was not received directly after applying at the service center, were you informed about the timelines to collect the outcome of your request?","If no, detail what happened in the comment box","1.Yes (2)
+2.No (0)
+3. Not Applicable (non-scoring)",Transaction,,,تقديم معاملة,"1. نعم (1)
+2.لا (0) 
+3.لاينطبق ",في حال لم يتم الحصول على المخرجات النهائية للخدمة (بطاقة / رخصة ، شهادة ..) خلال وقت الزيارة، هل تم إخبارك بالوقت المتوقع للحصول عليها؟,Q80.2,جودة معلومات الخدمة
+Customer privacy,Q81,Were the agents you interacted with capable of maintaining privacy while dealing with you?,"If no, detail what happened in the comment box","1.Yes (1)
+2.No (0)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ",هل كان كل موظف تعاملت معه قادر على المحافظة على الخصوصية خلال التعامل معك؟,Q81,خصوصية المتعامل
+Customer privacy,Q81.0,Were the documents or forms with customer information visible on the employee desk?,"If yes, detail what happened in the comment box","1.Yes (0)
+2.No (1)",Enquiry/ Transaction,,,استفسار / تقديم معاملة,"1. نعم (1)
+2.لا (0) ","هل كانت المستندات أو النماذج التي تظهر المعلومات الخاصة بالمتعامل واضحة ومرئية على مكتب الموظف؟  ",Q81.0,خصوصية المتعامل
+Customer effort,Q87,"How much effort do you feel you personally had to make to resolve your enquiry on this particular assessment? ",,"Low effort 
+It was easy for me to get my service completed (3)",Transaction,,,تقديم معاملة,"جهد منخفض
+كان من السهل بالنسبة لي الحصول على إجابة على استفساري (3)",ما مقدار الجهد الذي تشعر أنك بذلته شخصيًا في هذا التقييم لحل استفسارك ؟,Q87,جهد العميل

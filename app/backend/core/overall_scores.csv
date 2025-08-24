@@ -1,0 +1,34 @@
+Question,Possible Answer,Max Score,Score,Question Score
+,Possible answer,Max score,Score,Question score
+Q1,Yes (1)/ No (0),1,0,0
+Q2,Yes (2)/ No (0),2,1,0.5
+,,3,1,0.3333333333333333
+,,2,2,1
+,,8,4,0.5
+Overall survey score with weights and all questions and sections are applicable ,,,,
+Section,Weight,Scores,Section score based on Section Weights,
+Appearance,0.05,0.5,0.025,
+Service Accessibility,0.15,1,0.15,
+Professionalism of Staff,0.2,1,0.2,
+Speed of Service,0.2,0.33,0.066,
+Ease of use,0.2,1,0.2,
+Service Information Quality,0.15,1,0.15,
+Customer privacy,0.05,1,0.05,
+Overall Score ,,,0.8410000000000001,
+Overall survey score with weights for sections containing N/A answers. In the below example Customer Privacy is Not applicable,,,,
+We recalculate the weights after excluding the not applicable sections. Below is the calculation explanation: ,,,,
+Section,Weight,Scores,Weight precalculation,Section score based on Section Weights
+Appearance,0.05,0.9814814814814814,0.05263157894736842,0.0516569200779727
+Service Accessibility,0.15,1,0.15789473684210525,0.15789473684210525
+Professionalism of Staff,0.2,0.8571428571428571,0.21052631578947367,0.18045112781954886
+Speed of Service,0.2,0.8571428571428571,0.21052631578947367,0.18045112781954886
+Ease of use,0.2,0.9333333333333332,0.21052631578947367,0.1964912280701754
+Service Information Quality,0.15,0.75,0.15789473684210525,0.11842105263157894
+Customer privacy,0.05,,,0
+Overall Score ,,,,0.88536619326093
+Overall entity score calculation: ,,,,
+Example if the entity has 2 surveys (one per channel) ,,,,
+Surveys ,Max points,Scored points,Score per survey,
+1,95,90,0.9473684210526315,
+2,100,90,0.9,
+Overall entity score,,,0.9236842105263158,Average 
