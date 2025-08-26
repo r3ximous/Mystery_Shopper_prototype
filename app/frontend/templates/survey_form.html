@@ -87,7 +87,7 @@
         
         <div class="questions-grid">
           {% for q in category_questions %}
-          <div class="question-card" data-q="{{ q.id }}">
+          <div class="question-card" data-q="{{ q.id }}"{% if q.has_conditions %} data-conditional="true"{% endif %}>
             <div class="question-header">
               <div class="q-title">
                 <span class="q-text" data-lang="en">{{ q.text_en }}</span>

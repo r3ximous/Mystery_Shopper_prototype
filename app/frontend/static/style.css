@@ -1308,3 +1308,34 @@ tbody tr:hover {
 .light .condition-note small {
   color: #d97706;
 }
+
+/* Conditional Questions Styling */
+.question-card {
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+
+.question-card.hidden-conditional {
+  display: none !important;
+}
+
+/* Conditional question indicator */
+.question-card[data-conditional="true"] {
+  border-left: 3px solid var(--warn);
+  background-image: linear-gradient(135deg, transparent 0%, rgba(245, 158, 11, 0.03) 100%);
+}
+
+.question-card[data-conditional="true"]:before {
+  content: "Conditional";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--warn);
+  color: var(--bg);
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  opacity: 0.8;
+  z-index: 1;
+}

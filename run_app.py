@@ -28,7 +28,6 @@ if sys.platform == "win32":
     except (AttributeError, OSError):
         # Fallback for older Python versions or restricted environments
         pass
-
 try:
     import uvicorn
 except ImportError:
