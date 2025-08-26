@@ -3,16 +3,27 @@
 // Inject survey questions from backend (will be set by template)
 // window.__SURVEY_QUESTIONS is injected from the template
 
+// Debug mode check - enable via URL parameter or localStorage
+const isDebugMode = () => {
+  return new URLSearchParams(window.location.search).has('debug') || 
+         localStorage.getItem('survey_debug') === 'true';
+};
+
 // Generate conditional logic mapping dynamically from questions data
 function generateConditionalRules() {
   const rules = {};
+  const debug = isDebugMode();
   
-  console.log('[DEBUG] window.__SURVEY_QUESTIONS available:', !!window.__SURVEY_QUESTIONS);
-  console.log('[DEBUG] Questions data:', window.__SURVEY_QUESTIONS ? window.__SURVEY_QUESTIONS.length + ' questions' : 'undefined');
+  if (debug) {
+    console.log('[DEBUG] window.__SURVEY_QUESTIONS available:', !!window.__SURVEY_QUESTIONS);
+    console.log('[DEBUG] Questions data:', window.__SURVEY_QUESTIONS ? window.__SURVEY_QUESTIONS.length + ' questions' : 'undefined');
+  }
   
   if (window.__SURVEY_QUESTIONS && Array.isArray(window.__SURVEY_QUESTIONS)) {
     window.__SURVEY_QUESTIONS.forEach(question => {
-      console.log(`[DEBUG] Processing question ${question.id}: has_conditions=${question.has_conditions}, conditions="${question.conditions}"`);
+      if (debug) {
+        console.log(`[DEBUG] Processing question ${question.id}: has_conditions=${question.has_conditions}, conditions="${question.conditions}"`);
+      }
       
       if (question.has_conditions && question.conditions && question.conditions.trim()) {
         const condition = question.conditions.trim();
@@ -20,20 +31,22 @@ function generateConditionalRules() {
         // Parse condition format: "show if Q51 is yes" or "hide if Q72 is no"
         if (condition.toLowerCase().includes('show if')) {
           rules[question.id] = { show: condition };
-          console.log(`[DEBUG] Added show rule for ${question.id}: ${condition}`);
+          if (debug) console.log(`[DEBUG] Added show rule for ${question.id}: ${condition}`);
         } else if (condition.toLowerCase().includes('hide if')) {
           rules[question.id] = { hide: condition };
-          console.log(`[DEBUG] Added hide rule for ${question.id}: ${condition}`);
+          if (debug) console.log(`[DEBUG] Added hide rule for ${question.id}: ${condition}`);
         } else {
-          console.log(`[DEBUG] Unrecognized condition format for ${question.id}: "${condition}"`);
+          if (debug) console.log(`[DEBUG] Unrecognized condition format for ${question.id}: "${condition}"`);
         }
       }
     });
   } else {
-    console.error('[DEBUG] window.__SURVEY_QUESTIONS is not available or not an array');
+    if (debug) console.error('[DEBUG] window.__SURVEY_QUESTIONS is not available or not an array');
   }
   
-  console.log(`[DEBUG] Generated ${Object.keys(rules).length} conditional rules from questions data:`, rules);
+  if (debug) {
+    console.log(`[DEBUG] Generated ${Object.keys(rules).length} conditional rules from questions data:`, rules);
+  }
   return rules;
 }
 
@@ -45,8 +58,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Generate conditional rules now that the page is loaded
   CONDITIONAL_RULES = generateConditionalRules();
   
-  // Add a temporary debug indicator
-  if (Object.keys(CONDITIONAL_RULES).length > 0) {
+  // Add debug indicator only in debug mode
+  const debug = isDebugMode();
+  if (debug && Object.keys(CONDITIONAL_RULES).length > 0) {
     const header = document.querySelector('h1');
     if (header) {
       const debugSpan = document.createElement('span');
@@ -56,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
       debugSpan.textContent = `(${Object.keys(CONDITIONAL_RULES).length} conditional rules loaded)`;
       header.appendChild(debugSpan);
     }
+    console.log('[DEBUG] Debug mode active - conditional rules indicator shown');
   }
   
   const form = document.getElementById('surveyForm');
@@ -113,23 +128,28 @@ document.addEventListener('DOMContentLoaded', function() {
   // Function to evaluate conditional rules
   function evaluateCondition(rule, triggerQuestionId, triggerValue) {
     const condition = rule.show || rule.hide;
+    const debug = isDebugMode();
     
-    console.log(`[DEBUG] Evaluating condition: "${condition}" for trigger Q${triggerQuestionId}="${triggerValue}"`);
+    if (debug) {
+      console.log(`[DEBUG] Evaluating condition: "${condition}" for trigger Q${triggerQuestionId}="${triggerValue}"`);
+    }
     
     // Parse condition string (e.g., "if Q18 is 1 or 2", "if Q51 is yes")
     const match = condition.match(/if\s+(\w+(?:\.\w+)?)\s+is\s+(.+)/i);
     if (!match) {
-      console.log(`[DEBUG] Could not parse condition: "${condition}"`);
+      if (debug) console.log(`[DEBUG] Could not parse condition: "${condition}"`);
       return false;
     }
     
     const expectedQuestionId = match[1];
     const expectedValues = match[2].toLowerCase();
     
-    console.log(`[DEBUG] Expected Q${expectedQuestionId} to be "${expectedValues}"`);
+    if (debug) {
+      console.log(`[DEBUG] Expected Q${expectedQuestionId} to be "${expectedValues}"`);
+    }
     
     if (triggerQuestionId !== expectedQuestionId) {
-      console.log(`[DEBUG] Wrong trigger question (expected ${expectedQuestionId}, got ${triggerQuestionId})`);
+      if (debug) console.log(`[DEBUG] Wrong trigger question (expected ${expectedQuestionId}, got ${triggerQuestionId})`);
       return false;
     }
     
@@ -138,22 +158,22 @@ document.addEventListener('DOMContentLoaded', function() {
       // Multiple values: "1 or 2" or "1 or 2 or 3"
       const validValues = expectedValues.split(' or ').map(v => v.trim());
       const result = validValues.includes(triggerValue);
-      console.log(`[DEBUG] Multiple values check: ${validValues} includes "${triggerValue}" = ${result}`);
+      if (debug) console.log(`[DEBUG] Multiple values check: ${validValues} includes "${triggerValue}" = ${result}`);
       return result;
     } else if (expectedValues === 'yes') {
       // Yes condition - check for value 1 (yes) or string "yes"
       const result = triggerValue === '1' || triggerValue.toLowerCase() === 'yes';
-      console.log(`[DEBUG] Yes condition: "${triggerValue}" = ${result}`);
+      if (debug) console.log(`[DEBUG] Yes condition: "${triggerValue}" = ${result}`);
       return result;
     } else if (expectedValues === 'no') {
       // No condition - check for value 0 (no) or string "no"  
       const result = triggerValue === '0' || triggerValue.toLowerCase() === 'no';
-      console.log(`[DEBUG] No condition: "${triggerValue}" = ${result}`);
+      if (debug) console.log(`[DEBUG] No condition: "${triggerValue}" = ${result}`);
       return result;
     } else {
       // Single value
       const result = triggerValue === expectedValues;
-      console.log(`[DEBUG] Single value check: "${triggerValue}" === "${expectedValues}" = ${result}`);
+      if (debug) console.log(`[DEBUG] Single value check: "${triggerValue}" === "${expectedValues}" = ${result}`);
       return result;
     }
   }
@@ -162,7 +182,10 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateConditionalQuestions() {
     if (!form) return;
     
-    console.log(`[DEBUG] Updating conditional questions...`);
+    const debug = isDebugMode();
+    if (debug) {
+      console.log(`[DEBUG] Updating conditional questions...`);
+    }
     
     // Get current form values
     const formData = new FormData(form);
@@ -173,26 +196,28 @@ document.addEventListener('DOMContentLoaded', function() {
       const questionCard = document.querySelector(`[data-q="${questionId}"]`);
       
       if (!questionCard) {
-        console.log(`[DEBUG] Question card not found for ${questionId}`);
+        if (debug) console.log(`[DEBUG] Question card not found for ${questionId}`);
         return;
       }
       
-      console.log(`[DEBUG] Processing conditional question ${questionId} with rule:`, rule);
+      if (debug) {
+        console.log(`[DEBUG] Processing conditional question ${questionId} with rule:`, rule);
+      }
       
       // Extract the trigger question from the rule
       const condition = rule.show || rule.hide;
       const match = condition.match(/if\s+(\w+(?:\.\w+)?)\s+is\s+(.+)/);
       if (!match) {
-        console.log(`[DEBUG] Could not parse condition for ${questionId}: "${condition}"`);
+        if (debug) console.log(`[DEBUG] Could not parse condition for ${questionId}: "${condition}"`);
         return;
       }
       
       const triggerQuestionId = match[1];
       const triggerValue = formData.get(triggerQuestionId);
       
-      console.log(`[DEBUG] Trigger question ${triggerQuestionId} current value: "${triggerValue}"`);
-      
-      // Evaluate the condition
+      if (debug) {
+        console.log(`[DEBUG] Trigger question ${triggerQuestionId} current value: "${triggerValue}"`);
+      }
       let shouldShow = false;
       if (triggerValue) {
         if (rule.show) {
