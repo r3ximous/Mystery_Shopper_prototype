@@ -10,6 +10,7 @@ def parse_questions_from_csv() -> List[Dict[str, Any]]:
     filename = os.path.join(script_dir, "questions.csv")
     
     questions = []
+    questions_dict = {}  # Use dict to handle duplicates - last one wins
     
     try:
         with open(filename, "r", encoding="utf-8") as f:
@@ -23,6 +24,11 @@ def parse_questions_from_csv() -> List[Dict[str, Any]]:
                 question_id = row.get('Quet.Nr', '').strip()
                 if not question_id.startswith('Q'):
                     continue
+                
+                # Skip rows marked for deletion
+                changes_made = row.get('Changes made', '').strip().lower()
+                if 'to be deleted' in changes_made:
+                    continue
                     
                 # Parse answer format to determine question type
                 possible_answers = row.get('Possible Answers', '').strip()
@@ -30,13 +36,31 @@ def parse_questions_from_csv() -> List[Dict[str, Any]]:
                 answer_options = []
                 max_score = 5
                 
-                if 'Yes (1)' in possible_answers and 'No (0)' in possible_answers:
+                # Check for various Yes/No patterns
+                is_yes_no = False
+                yes_score = 1
+                no_score = 0
+                
+                # Look for Yes/No patterns with different scores
+                if ('Yes (' in possible_answers and 'No (' in possible_answers) or \
+                   ('نعم (' in possible_answers and 'لا (' in possible_answers):
+                    # Extract the scores for Yes and No
+                    import re
+                    yes_match = re.search(r'(?:Yes|نعم)\s*\((\d+)\)', possible_answers)
+                    no_match = re.search(r'(?:No|لا)\s*\((\d+)\)', possible_answers)
+                    
+                    if yes_match and no_match:
+                        yes_score = int(yes_match.group(1))
+                        no_score = int(no_match.group(1))
+                        is_yes_no = True
+                
+                if is_yes_no:
                     question_type = 'yes_no'
                     answer_options = [
-                        {'value': 1, 'label_en': 'Yes', 'label_ar': 'نعم'},
-                        {'value': 0, 'label_en': 'No', 'label_ar': 'لا'}
+                        {'value': yes_score, 'label_en': 'Yes', 'label_ar': 'نعم'},
+                        {'value': no_score, 'label_en': 'No', 'label_ar': 'لا'}
                     ]
-                    max_score = 1
+                    max_score = max(yes_score, no_score)
                 elif '(3)' in possible_answers or '(2)' in possible_answers or '(1)' in possible_answers:
                     # Multi-option questions - parse the options
                     question_type = 'multiple_choice'
@@ -64,7 +88,7 @@ def parse_questions_from_csv() -> List[Dict[str, Any]]:
                 skips_triggers = row.get('Skips & Triggers', '').strip()
                 has_conditions = bool(skips_triggers and skips_triggers not in ['', 'N/A'])
                 
-                questions.append({
+                questions_dict[question_id] = {
                     'id': question_id,
                     'text_en': row.get('Question', '').strip(),
                     'text_ar': row.get('السؤال', '').strip(),
@@ -76,7 +100,7 @@ def parse_questions_from_csv() -> List[Dict[str, Any]]:
                     'has_conditions': has_conditions,
                     'conditions': skips_triggers,
                     'visit_type': row.get('Type of visit', '').strip()
-                })
+                }
     
     except FileNotFoundError:
         print(f"Warning: questions.csv not found at {filename}")
@@ -85,6 +109,8 @@ def parse_questions_from_csv() -> List[Dict[str, Any]]:
         print(f"Error parsing questions.csv: {e}")
         return get_fallback_questions()
     
+    # Convert dict to list, preserving order by question ID
+    questions = list(questions_dict.values())
     return questions
 
 def get_fallback_questions() -> List[Dict[str, Any]]:
