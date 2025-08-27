@@ -2,6 +2,11 @@ from datetime import datetime
 from ..schemas.survey import SurveySubmissionIn, SurveySubmissionOut
 from ..core.security import sanitize_text
 from ..core.questions import get_questions
+from ..utils.scoring_analysis import (
+    parse_max_score, 
+    get_section_weight_mapping, 
+    calculate_weighted_section_scores
+)
 from typing import List, Dict, Any
 import csv
 import os
@@ -16,15 +21,24 @@ def get_questions_dict() -> Dict[str, str]:
 
 def get_section_weights() -> Dict[str, Dict[str, Any]]:
     """Get section weights based on the scoring system"""
-    return {
-        'Appearance': {'weight': 0.05, 'sections': ['Center Access', 'Facilities Parking', 'Premises Exterior', 'Premises Interior', 'Waiting Area']},
-        'Service Accessibility': {'weight': 0.15, 'sections': ['People of Determination', 'Service Accessibility']},
-        'Professionalism of Staff': {'weight': 0.20, 'sections': ['Receptionist Soft Skills', 'Receptionist knowledge', 'Customer service employee soft Skills', 'Customer service employee knowledge']},
-        'Speed of Service': {'weight': 0.20, 'sections': ['Speed of Service']},
-        'Ease of use': {'weight': 0.20, 'sections': ['Ease of use']},
-        'Service Information Quality': {'weight': 0.15, 'sections': ['Service Information Quality']},
-        'Customer privacy': {'weight': 0.05, 'sections': ['Customer privacy']},
-    }
+    # Use the utility function from scoring_analysis
+    weight_mapping = get_section_weight_mapping()
+    
+    # Transform to the format expected by the frontend
+    section_weights = {}
+    main_sections = {}
+    
+    for section, info in weight_mapping.items():
+        display_name = info['display_name']
+        weight = info['weight']
+        
+        if display_name not in main_sections:
+            main_sections[display_name] = {'weight': 0, 'sections': []}
+        
+        main_sections[display_name]['weight'] += weight
+        main_sections[display_name]['sections'].append(section)
+    
+    return main_sections
 
 def get_question_max_scores() -> Dict[str, int]:
     """Get maximum possible scores for each question by parsing CSV"""

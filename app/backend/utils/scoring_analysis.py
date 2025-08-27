@@ -1,16 +1,17 @@
 """
-Script to analyze questions structure and implement proper scoring weights
+Scoring analysis utilities for the Mystery Shopper backend
+Provides functions to analyze questions structure and calculate proper scoring weights
 """
 
 import csv
 import os
 from typing import Dict, List, Any, Optional
+from ..core.questions import get_questions
 
-def load_questions_from_csv():
+def load_questions_from_csv() -> tuple[List[Dict], Dict[str, List]]:
     """Load questions from CSV and map them to sections with proper weights"""
     questions_file = os.path.join(
-        os.path.dirname(__file__), 
-        'app', 'backend', 'core', 'questions.csv'
+        os.path.dirname(__file__), '..', 'core', 'questions.csv'
     )
     
     questions = []
@@ -23,6 +24,10 @@ def load_questions_from_csv():
                 question_id = row['Quet.Nr'].strip()
                 section = row['Criteria'].strip()
                 
+                # Skip deleted questions
+                if question_id.endswith('_DELETED') or row.get('Status') == 'DELETED':
+                    continue
+                
                 # Parse possible answers to determine max score
                 answers = row['Possible Answers'].strip()
                 max_score = parse_max_score(answers)
@@ -34,7 +39,9 @@ def load_questions_from_csv():
                     'question_ar': row['السؤال'].strip() if row['السؤال'] else '',
                     'answers': answers,
                     'max_score': max_score,
-                    'visit_type': row['Type of visit'].strip()
+                    'visit_type': row['Type of visit'].strip(),
+                    'has_conditions': bool(row.get('Conditions', '').strip()),
+                    'conditions': row.get('Conditions', '').strip()
                 }
                 
                 questions.append(question_data)
@@ -61,7 +68,7 @@ def parse_max_score(answers: str) -> int:
     lines = [line.strip() for line in answers.split('\n') if line.strip()]
     return len(lines) if lines else 1
 
-def map_sections_to_weights():
+def get_section_weight_mapping() -> Dict[str, Dict[str, Any]]:
     """Map sections based on the overall_scores.csv structure"""
     return {
         # Main sections with their weights from overall_scores.csv
@@ -80,21 +87,39 @@ def map_sections_to_weights():
         'Customer effort': {'weight': 0.0, 'display_name': 'Customer effort'}  # Not included in main scoring
     }
 
-def calculate_section_scores(submissions: List[Dict], questions: List[Dict]) -> Dict[str, Any]:
+def get_main_section_mapping() -> Dict[str, str]:
+    """Map specific sections to main scoring categories"""
+    return {
+        'Center Access': 'Appearance',
+        'Facilities Parking': 'Appearance',
+        'Premises Exterior': 'Appearance', 
+        'Premises Interior': 'Appearance',
+        'Waiting Area': 'Appearance',
+        'People of Determination': 'Service Accessibility',
+        'Service Accessibility': 'Service Accessibility',
+        'Professionalism of Staff': 'Professionalism of Staff',
+        'Speed of Service': 'Speed of Service',
+        'Ease of use': 'Ease of use',
+        'Service Information Quality': 'Service Information Quality',
+        'Customer privacy': 'Customer privacy',
+        'Customer effort': 'Customer effort'
+    }
+
+def calculate_weighted_section_scores(submissions: List[Dict], questions: List[Dict]) -> Dict[str, Any]:
     """Calculate section scores based on weighted criteria"""
     if not submissions:
         return {}
     
     # Create question lookup
     question_lookup = {q['id']: q for q in questions}
-    section_weights = map_sections_to_weights()
+    section_weights = get_section_weight_mapping()
+    main_section_mapping = get_main_section_mapping()
     
     # Group questions by main sections
     section_groups = {}
     for q in questions:
         section = q['section']
-        # Map specific sections to main categories
-        main_section = get_main_section(section)
+        main_section = main_section_mapping.get(section, section)
         if main_section not in section_groups:
             section_groups[main_section] = []
         section_groups[main_section].append(q)
@@ -136,6 +161,8 @@ def calculate_section_scores(submissions: List[Dict], questions: List[Dict]) -> 
                     'weight': section_weights[main_section]['weight'],
                     'weighted_score': section_percentage * section_weights[main_section]['weight'],
                     'questions_count': section_count,
+                    'raw_total': section_total,
+                    'raw_max': section_max,
                     'display_name': section_weights[main_section]['display_name']
                 }
         
@@ -149,34 +176,49 @@ def calculate_section_scores(submissions: List[Dict], questions: List[Dict]) -> 
             'submission_id': submission.get('id'),
             'section_scores': section_scores,
             'overall_score': overall_score,
-            'total_weighted_score': total_weighted_score
+            'total_weighted_score': total_weighted_score,
+            'total_weight_used': total_weight
         })
     
     return submission_scores
 
-def get_main_section(section_name: str) -> str:
-    """Map specific sections to main scoring categories"""
-    section_mapping = {
-        'Center Access': 'Appearance',
-        'Facilities Parking': 'Appearance',
-        'Premises Exterior': 'Appearance', 
-        'Premises Interior': 'Appearance',
-        'Waiting Area': 'Appearance',
-        'People of Determination': 'Service Accessibility',
-        'Service Accessibility': 'Service Accessibility',
-        'Professionalism of Staff': 'Professionalism of Staff',
-        'Speed of Service': 'Speed of Service',
-        'Ease of use': 'Ease of use',
-        'Service Information Quality': 'Service Information Quality',
-        'Customer privacy': 'Customer privacy',
-        'Customer effort': 'Customer effort'
+def analyze_questions_structure() -> Dict[str, Any]:
+    """Analyze the current questions structure for debugging"""
+    questions = get_questions()
+    questions_csv, sections = load_questions_from_csv()
+    
+    conditional_questions = [q for q in questions_csv if q.get('has_conditions', False)]
+    
+    analysis = {
+        'total_questions': len(questions),
+        'total_csv_questions': len(questions_csv),
+        'sections_count': len(sections),
+        'conditional_questions_count': len(conditional_questions),
+        'sections': {name: len(qs) for name, qs in sections.items()},
+        'conditional_questions': [
+            {
+                'id': q['id'],
+                'section': q['section'],
+                'conditions': q['conditions']
+            } for q in conditional_questions[:10]  # First 10 for brevity
+        ]
     }
     
-    return section_mapping.get(section_name, section_name)
+    return analysis
 
-if __name__ == "__main__":
-    questions, sections = load_questions_from_csv()
-    print(f"Loaded {len(questions)} questions across {len(sections)} sections")
-    print("\nSections:")
-    for section, question_ids in sections.items():
-        print(f"  {section}: {len(question_ids)} questions")
+def get_q51_dependencies() -> List[Dict]:
+    """Get all questions that depend on Q51"""
+    questions_csv, _ = load_questions_from_csv()
+    q51_deps = [
+        q for q in questions_csv 
+        if q.get('conditions', '').lower().find('q51') != -1
+    ]
+    
+    return [
+        {
+            'id': q['id'],
+            'section': q['section'],
+            'question': q['question_en'][:100] + '...' if len(q['question_en']) > 100 else q['question_en'],
+            'conditions': q['conditions']
+        } for q in q51_deps
+    ]
