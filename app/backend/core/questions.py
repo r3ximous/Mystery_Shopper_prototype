@@ -147,6 +147,10 @@ def get_questions_by_category():
     questions = get_questions()
     categories = {}
     
+    # Add sequential display numbers to all questions
+    for i, q in enumerate(questions, 1):
+        q['display_number'] = i
+    
     for q in questions:
         category = q.get('category', 'Other')
         if category not in categories:
@@ -154,4 +158,3 @@ def get_questions_by_category():
         categories[category].append(q)
     
     return categories
-    return questions

@@ -94,7 +94,8 @@
                 {% if q.text_ar %}
                 <span class="q-text" data-lang="ar" style="display: none; direction: rtl; text-align: right;">{{ q.text_ar }}</span>
                 {% endif %}
-                <span class="badge">{{ q.id }}</span>
+                <span class="badge">{{ q.display_number }}</span>
+                <button type="button" class="voice-question-btn" data-question="{{ q.id }}" title="Voice input for this question">🎤</button>
               </div>
               {% if q.elaboration_en %}
               <div class="q-elaboration" data-lang="en">{{ q.elaboration_en }}</div>
@@ -190,6 +191,6 @@
 window.__SURVEY_QUESTIONS = JSON.parse(decodeURIComponent("{{ questions|tojson|urlencode }}"));
 </script>
 <script src="/static/js/survey_progress.js"></script>
-<script src="/static/js/voice_performance_patch.js"></script>
-<script type="module" src="/static/js/survey_main.js"></script>
+<script src="/static/js/survey_submit_simple.js"></script>
+<script src="/static/js/direct_voice_integration.js"></script>
 {% endblock %}

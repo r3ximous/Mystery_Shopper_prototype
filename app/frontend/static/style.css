@@ -582,6 +582,47 @@ button:active {
   flex-shrink: 0;
 }
 
+/* Voice question buttons */
+.voice-question-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.2rem;
+  margin-left: 0.5rem;
+  opacity: 0.6;
+  transition: opacity 0.2s, transform 0.2s;
+  border-radius: 3px;
+}
+
+.voice-question-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  background: rgba(199, 154, 72, 0.1);
+}
+
+.voice-question-btn:active {
+  transform: scale(0.95);
+}
+
+.voice-question-btn.active {
+  opacity: 1;
+  background: rgba(199, 154, 72, 0.3);
+  animation: pulse 1.5s infinite;
+  box-shadow: 0 0 10px rgba(199, 154, 72, 0.5);
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: scale(1.05);
+  }
+}
+
 /* Star rating improvements for comprehensive questions */
 .stars {
   display: inline-flex;
