@@ -6,40 +6,424 @@
   <div class="metric"><h4>Average Score</h4><div class="value" id="m-avg">-</div><small>Weighted</small></div>
   <div class="metric"><h4>Channels</h4><div class="value" id="m-channels">0</div><small>Active</small></div>
 </div>
+
+<!-- Section Scores -->
 <div class="card" style="margin-top:1.4rem;">
-  <h3 style="margin-top:0;font-size:1rem;letter-spacing:.5px;">Submissions</h3>
-  <div class="table-wrap">
-    <table id="subs"><thead><tr><th>ID</th><th>Channel</th><th>Location</th><th>Shopper</th><th>Visit</th><th>Scores</th></tr></thead><tbody></tbody></table>
+  <h3 style="margin-top:0;font-size:1rem;letter-spacing:.5px;">Section Performance Analysis</h3>
+  <div class="section-scores" id="sectionScores">
+    <!-- Section scores will be populated here -->
   </div>
 </div>
+
+<!-- Channel Breakdown -->
+<div class="card" style="margin-top:1.4rem;">
+  <h3 style="margin-top:0;font-size:1rem;letter-spacing:.5px;">Channel Performance</h3>
+  <div class="channel-breakdown" id="channelBreakdown">
+    <!-- Channel scores will be populated here -->
+  </div>
+</div>
+
+<!-- Recent Submissions -->
+<div class="card" style="margin-top:1.4rem;">
+  <h3 style="margin-top:0;font-size:1rem;letter-spacing:.5px;">Recent Submissions</h3>
+  <div class="table-wrap">
+    <table id="subs">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Channel</th>
+          <th>Location</th>
+          <th>Shopper</th>
+          <th>Visit Date</th>
+          <th>Overall Score</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Detailed Score Modal -->
+<div id="scoreModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Detailed Submission Score</h3>
+      <button class="close-btn" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <!-- Detailed scores will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<style>
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.metric {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.metric h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  font-weight: normal;
+}
+
+.metric .value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--accent);
+  margin: 0.5rem 0;
+}
+
+.metric small {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+.section-scores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.section-item {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-alt);
+}
+
+.section-name {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  color: var(--text);
+}
+
+.section-weight {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.progress-bar {
+  background: var(--border);
+  height: 8px;
+  border-radius: var(--radius-sm);
+  margin: 0.5rem 0;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent-grad);
+  transition: width 0.3s ease;
+}
+
+.section-score-text {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  display: flex;
+  justify-content: space-between;
+}
+
+.channel-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.channel-item {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-alt);
+  text-align: center;
+}
+
+.channel-name {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.channel-score {
+  font-size: 1.5rem;
+  color: var(--accent);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+th {
+  background: var(--bg-alt);
+  font-weight: bold;
+  color: var(--text-dim);
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+}
+
+.btn-small {
+  padding: 0.25rem 0.5rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-small:hover {
+  filter: brightness(1.1);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  background: var(--card);
+  margin: 5% auto;
+  padding: 0;
+  width: 80%;
+  max-width: 800px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-alt);
+}
+
+.modal-header h3 {
+  color: var(--text);
+  margin: 0;
+}
+
+.modal-body {
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  color: var(--text);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+</style>
+
 <script>
-const API_KEY = 'dev-admin-key'; // prototype only
-async function safeFetch(url){
-  const res = await fetch(url,{headers:{'X-API-Key':API_KEY}});
-  if(!res.ok){
-    const txt = await res.text();
-    throw new Error('Request failed '+res.status+': '+txt);
-  }
-  return res.json();
+async function loadDashboard() {
+    try {
+        const response = await fetch('/api/survey/summary');
+        const data = await response.json();
+        
+        // Update metrics
+        document.getElementById('m-total').textContent = data.total || 0;
+        document.getElementById('m-avg').textContent = data.overall_average ? `${data.overall_average.toFixed(1)}%` : '-';
+        document.getElementById('m-channels').textContent = data.unique_channels || 0;
+        
+        // Update section scores
+        updateSectionScores(data.section_scores || {});
+        
+        // Update channel breakdown
+        updateChannelBreakdown(data.channel_summary || {});
+        
+        // Load recent submissions
+        loadSubmissions();
+        
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+    }
 }
-async function loadMetrics(){
-  const m = await safeFetch('/api/admin/metrics');
-  document.getElementById('m-total').textContent = m.total;
-  document.getElementById('m-avg').textContent = m.avg_score === null ? '-' : m.avg_score;
-  document.getElementById('m-channels').textContent = Object.keys(m.channel_breakdown || {}).length;
+
+function updateSectionScores(sectionScores) {
+    const container = document.getElementById('sectionScores');
+    container.innerHTML = '';
+    
+    const sectionWeights = {
+        'Appearance': 5,
+        'Service accessibility': 15,
+        'Professionalism': 20,
+        'Speed': 20,
+        'Ease of use': 20,
+        'Service information quality': 15,
+        'Customer privacy': 5
+    };
+    
+    Object.entries(sectionScores).forEach(([section, score]) => {
+        const weight = sectionWeights[section] || 0;
+        const percentage = score.toFixed(1);
+        
+        const sectionElement = document.createElement('div');
+        sectionElement.className = 'section-item';
+        sectionElement.innerHTML = `
+            <div class="section-name">
+                <span>${section}</span>
+                <span class="section-weight">${weight}%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: ${percentage}%"></div>
+            </div>
+            <div class="section-score-text">
+                <span>Score</span>
+                <span>${percentage}%</span>
+            </div>
+        `;
+        container.appendChild(sectionElement);
+    });
 }
-async function loadSubs(){
-  const subs = await safeFetch('/api/admin/submissions');
-  const tbody = document.querySelector('#subs tbody');
-  tbody.innerHTML = '';
-  subs.forEach(s => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${s.id}</td><td><span class='pill'>${s.channel}</span></td><td>${s.location_code}</td><td>${s.shopper_id}</td><td>${new Date(s.visit_datetime).toLocaleString()}</td><td>${s.scores.map(q=>q.question_id+':'+q.score).join(', ')}</td>`;
-    tbody.appendChild(tr);
-  });
+
+function updateChannelBreakdown(channelSummary) {
+    const container = document.getElementById('channelBreakdown');
+    container.innerHTML = '';
+    
+    Object.entries(channelSummary).forEach(([channel, data]) => {
+        const channelElement = document.createElement('div');
+        channelElement.className = 'channel-item';
+        channelElement.innerHTML = `
+            <div class="channel-name">${channel}</div>
+            <div class="channel-score">${data.average.toFixed(1)}%</div>
+            <small>${data.count} submissions</small>
+        `;
+        container.appendChild(channelElement);
+    });
 }
-function refresh(){ loadMetrics().catch(console.error); loadSubs().catch(console.error); }
-refresh();
-setInterval(refresh, 15000);
+
+async function loadSubmissions() {
+    try {
+        const response = await fetch('/api/survey/submissions');
+        const submissions = await response.json();
+        
+        const tbody = document.querySelector('#subs tbody');
+        tbody.innerHTML = '';
+        
+        submissions.slice(0, 10).forEach(sub => {
+            const row = document.createElement('tr');
+            const visitDate = new Date(sub.visit_date).toLocaleDateString();
+            const overallScore = sub.overall_score ? `${sub.overall_score.toFixed(1)}%` : 'N/A';
+            
+            row.innerHTML = `
+                <td>${sub.id}</td>
+                <td><span class="pill">${sub.channel}</span></td>
+                <td>${sub.location}</td>
+                <td>${sub.shopper_name}</td>
+                <td>${visitDate}</td>
+                <td>${overallScore}</td>
+                <td><button class="btn-small" onclick="showDetails(${sub.id})">Details</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+        
+    } catch (error) {
+        console.error('Error loading submissions:', error);
+    }
+}
+
+async function showDetails(submissionId) {
+    try {
+        const response = await fetch(`/api/survey/submissions/${submissionId}/detailed-score`);
+        const details = await response.json();
+        
+        const modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = `
+            <h4>Submission ID: ${submissionId}</h4>
+            <p><strong>Overall Score:</strong> ${details.overall_score.toFixed(1)}%</p>
+            <p><strong>Visit Date:</strong> ${new Date(details.visit_date).toLocaleDateString()}</p>
+            <p><strong>Channel:</strong> ${details.channel}</p>
+            <p><strong>Location:</strong> ${details.location}</p>
+            <p><strong>Shopper:</strong> ${details.shopper_name}</p>
+            
+            <h4>Section Breakdown:</h4>
+            <div class="section-scores">
+                ${Object.entries(details.section_scores).map(([section, score]) => `
+                    <div class="section-item">
+                        <div class="section-name">
+                            <span>${section}</span>
+                            <span class="section-weight">${score.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        document.getElementById('scoreModal').style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading submission details:', error);
+    }
+}
+
+function closeModal() {
+    document.getElementById('scoreModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('scoreModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Load dashboard on page load
+document.addEventListener('DOMContentLoaded', loadDashboard);
+
+// Auto-refresh every 30 seconds
+setInterval(loadDashboard, 30000);
 </script>
 {% endblock %}

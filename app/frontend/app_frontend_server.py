@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -17,19 +17,39 @@ frontend.add_middleware(
     allow_headers=["*"],
 )
 
+# Custom StaticFiles class with cache-busting headers
+class NoCacheStaticFiles(StaticFiles):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        # Add cache-busting headers for CSS and JS files
+        if path.endswith(('.css', '.js')):
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            response.headers["Pragma"] = "no-cache" 
+            response.headers["Expires"] = "0"
+        return response
+
 # Support running when bundled by PyInstaller (resources extracted to _MEIPASS temp dir)
 BASE_DIR = getattr(sys, "_MEIPASS", os.path.abspath("."))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "app", "frontend", "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "app", "frontend", "static")
 
-frontend.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+frontend.mount("/static", NoCacheStaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 @frontend.get("/", response_class=HTMLResponse)
-async def survey_page(request: Request):
+async def survey_page(request: Request, response: Response):
     from ..backend.core.questions import get_questions, get_questions_by_category
     questions = get_questions()
     categories = get_questions_by_category()
+    
+    # Add cache-busting headers to prevent browser caching
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
     return templates.TemplateResponse("survey_form.html", {
         "request": request, 
         "questions": questions,
