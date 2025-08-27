@@ -118,8 +118,8 @@
                   {% for option in q.answer_options %}
                   <input id="{{ q.id }}_{{ option.value }}" type="radio" name="{{ q.id }}" value="{{ option.value }}" required />
                   <label for="{{ q.id }}_{{ option.value }}" class="choice-option">
-                    <span class="choice-score">{{ option.value }}</span>
-                    <span class="choice-text">{{ option.label_en }}</span>
+                    <span class="choice-score">{{ loop.index }}</span>
+                    <span class="choice-text">{{ loop.index }}. {{ option.label_en }}</span>
                   </label>
                   {% endfor %}
                 </div>
@@ -192,5 +192,11 @@ window.__SURVEY_QUESTIONS = JSON.parse(decodeURIComponent("{{ questions|tojson|u
 </script>
 <script src="/static/js/survey_progress.js"></script>
 <script src="/static/js/survey_submit_simple.js"></script>
-<script src="/static/js/direct_voice_integration.js"></script>
+<!-- Voice System Modules -->
+<script src="/static/js/voice/voice-core.js"></script>
+<script src="/static/js/voice/voice-parser.js"></script>
+<script src="/static/js/voice/voice-ui.js"></script>
+<script src="/static/js/voice/question-manager.js"></script>
+<script src="/static/js/voice/voice-tts.js"></script>
+<script src="/static/js/voice/voice-controller.js"></script>
 {% endblock %}

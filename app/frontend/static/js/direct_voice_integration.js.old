@@ -514,7 +514,30 @@ function processDirectVoiceInput(transcript) {
         }
     } else {
         addDebugLog('❓ Could not parse answer from transcript', 'error');
-        updateVoiceDisplay('❓ Didn\'t Understand', 'Try: numbers 1-5, yes, no, or navigation commands');
+        
+        // Provide context-aware feedback based on current question
+        const currentQuestion = allQuestions[currentQuestionIndex];
+        let helpMessage = 'Try: navigation commands (next, previous, repeat, stop)';
+        
+        if (currentQuestion) {
+            if (currentQuestion.inputs.length === 2) {
+                helpMessage = 'Try: yes, no, 1, 2, or navigation commands';
+            } else if (currentQuestion.inputs.length > 2) {
+                helpMessage = `Try: numbers 1-${currentQuestion.inputs.length}, or navigation commands`;
+            } else {
+                helpMessage = 'Try: numbers 1-5, or navigation commands';
+            }
+        }
+        
+        updateVoiceDisplay('❓ Didn\'t Understand', helpMessage);
+        
+        // Optionally repeat the question guidance
+        setTimeout(() => {
+            if (isDirectVoiceActive && currentQuestion) {
+                addDebugLog('Providing question guidance after failed recognition', 'info');
+                announceCurrentQuestion();
+            }
+        }, 2000);
     }
 }
 
@@ -522,39 +545,166 @@ function parseDirectAnswer(transcript) {
     const lower = transcript.toLowerCase();
     addDebugLog(`Parsing answer from: "${lower}"`);
     
-    // Check for numbers 1-5
-    const numberMatch = lower.match(/\b([1-5])\b/);
+    // Check for numbers 1-9 (expanded range to support more options)
+    const numberMatch = lower.match(/\b([1-9])\b/);
     if (numberMatch) {
         addDebugLog(`Found number: ${numberMatch[1]}`);
         return numberMatch[1];
     }
     
-    // Check for yes/no
-    if (/\b(yes|yeah|yep)\b/i.test(lower)) {
+    // Check for yes/no variations
+    if (/\b(yes|yeah|yep|correct|true|right|affirmative)\b/i.test(lower)) {
         addDebugLog('Found: yes');
         return 'yes';
     }
     
-    if (/\b(no|nope)\b/i.test(lower)) {
+    if (/\b(no|nope|wrong|false|negative|incorrect)\b/i.test(lower)) {
         addDebugLog('Found: no');
         return 'no';
     }
     
-    // Check for word numbers
+    // Check for word numbers (expanded)
     const wordNumbers = {
         'one': '1',
         'two': '2', 
         'three': '3',
         'four': '4',
-        'five': '5'
+        'five': '5',
+        'six': '6',
+        'seven': '7',
+        'eight': '8',
+        'nine': '9',
+        'first': '1',
+        'second': '2',
+        'third': '3',
+        'fourth': '4',
+        'fifth': '5'
     };
     
     for (const [word, number] of Object.entries(wordNumbers)) {
         if (lower.includes(word)) {
+            addDebugLog(`Found word number: ${word} -> ${number}`);
             return number;
         }
     }
     
+    // Failsafe parsing for common speech recognition errors
+    const speechFailsafes = {
+        // Common "no" misrecognitions
+        'now': 'no',
+        'know': 'no',
+        'noah': 'no',
+        'none': 'no',
+        'not': 'no',
+        
+        // Common number misrecognitions
+        'won': '1',
+        'one': '1',
+        'want': '1',
+        'wine': '1',
+        
+        'to': '2',
+        'too': '2',
+        'two': '2',
+        'tube': '2',
+        'do': '2',
+        
+        'tree': '3',
+        'three': '3',
+        'tea': '3',
+        'free': '3',
+        'see': '3',
+        
+        'for': '4',
+        'four': '4',
+        'fore': '4',
+        'door': '4',
+        'more': '4',
+        
+        'five': '5',
+        'hive': '5',
+        'dive': '5',
+        'life': '5',
+        
+        // Common "yes" misrecognitions
+        'yes': 'yes',
+        'yep': 'yes',
+        'yeas': 'yes',
+        'chess': 'yes',
+        'guess': 'yes',
+        'ass': 'yes', // Sometimes "yes" gets misheard
+        
+        // Additional ordinals that might be misheard
+        'furst': '1',
+        'fest': '1',
+        'secant': '2',
+        'secon': '2',
+        'turd': '3',
+        'therd': '3',
+        'forth': '4',
+        'fith': '5'
+    };
+    
+    // Check each failsafe pattern
+    for (const [misheard, correct] of Object.entries(speechFailsafes)) {
+        if (lower.includes(misheard)) {
+            // If it's a number, return the number
+            if (/^\d+$/.test(correct)) {
+                addDebugLog(`Failsafe match: "${misheard}" -> ${correct}`);
+                return correct;
+            }
+            // If it's yes/no, return that
+            if (correct === 'yes' || correct === 'no') {
+                addDebugLog(`Failsafe match: "${misheard}" -> ${correct}`);
+                return correct;
+            }
+        }
+    }
+    
+    // Check for choice-related phrases
+    if (lower.includes('choice') || lower.includes('option')) {
+        const choiceMatch = lower.match(/(?:choice|option)\s*([1-9])/);
+        if (choiceMatch) {
+            addDebugLog(`Found choice/option: ${choiceMatch[1]}`);
+            return choiceMatch[1];
+        }
+    }
+    
+    // Check for letter choices (A, B, C, etc.) and convert to numbers
+    const letterMatch = lower.match(/\b([a-i])\b/);
+    if (letterMatch) {
+        const letterToNumber = {
+            'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5',
+            'f': '6', 'g': '7', 'h': '8', 'i': '9'
+        };
+        const number = letterToNumber[letterMatch[1]];
+        if (number) {
+            addDebugLog(`Found letter: ${letterMatch[1].toUpperCase()} -> ${number}`);
+            return number;
+        }
+    }
+    
+    // Phonetic number matching (last resort)
+    const phoneticNumbers = {
+        'wun': '1',
+        'too': '2', 
+        'tree': '3',
+        'for': '4',
+        'fyv': '5',
+        'siks': '6',
+        'sevn': '7',
+        'ate': '8',
+        'nyn': '9'
+    };
+    
+    for (const [phonetic, number] of Object.entries(phoneticNumbers)) {
+        if (lower.includes(phonetic)) {
+            addDebugLog(`Phonetic match: "${phonetic}" -> ${number}`);
+            return number;
+        }
+    }
+    
+    addDebugLog('No recognizable answer pattern found');
     return null;
 }
 
@@ -586,15 +736,37 @@ function selectAnswer(question, answer) {
         }
     }
     
-    // For numbers, find exact match
+    // For numbers, map to the display order (1st, 2nd, 3rd option) rather than scoring values
+    if (/^\d+$/.test(answer)) {
+        const optionIndex = parseInt(answer) - 1; // Convert 1-based to 0-based index
+        
+        if (optionIndex >= 0 && optionIndex < question.inputs.length) {
+            // Get the input at the specified display position
+            const input = question.inputs[optionIndex];
+            
+            if (input) {
+                addDebugLog(`Mapping spoken "${answer}" to option ${optionIndex + 1} (value="${input.value}")`, 'info');
+                input.checked = true;
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                highlightSelectedAnswer(input);
+                return true;
+            }
+        } else {
+            addDebugLog(`Invalid option number: ${answer}. Question has ${question.inputs.length} options.`, 'error');
+        }
+    }
+    
+    // Fallback: try exact value match (legacy behavior)
     const input = question.inputs.find(inp => inp.value === answer);
     if (input) {
+        addDebugLog(`Fallback: Exact value match for "${answer}"`, 'info');
         input.checked = true;
         input.dispatchEvent(new Event('change', { bubbles: true }));
         highlightSelectedAnswer(input);
         return true;
     }
     
+    addDebugLog(`No matching option found for "${answer}"`, 'error');
     return false;
 }
 
@@ -668,8 +840,26 @@ function announceCurrentQuestion() {
     
     // Speak the question if speech synthesis is available
     if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(`Question ${questionNumber}. ${questionText}. Say a number from 1 to 5, or yes or no.`);
+        // Determine the appropriate voice guidance based on question type
+        let voiceGuidance = '';
+        
+        // Check if it's a yes/no question (has exactly 2 options)
+        if (question.inputs.length === 2) {
+            voiceGuidance = 'Say yes or no.';
+        } 
+        // Check if it's a multiple choice question (more than 2 options)
+        else if (question.inputs.length > 2) {
+            voiceGuidance = `Say a number from 1 to ${question.inputs.length} for your choice.`;
+        }
+        // Default for rating questions
+        else {
+            voiceGuidance = 'Say a number from 1 to 5.';
+        }
+        
+        const utterance = new SpeechSynthesisUtterance(`Question ${questionNumber}. ${questionText}. ${voiceGuidance}`);
         utterance.rate = 1.0;
+        
+        addDebugLog(`Speaking: Question ${questionNumber} with ${question.inputs.length} options`, 'info');
         speechSynthesis.speak(utterance);
     }
 }
