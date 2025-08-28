@@ -269,19 +269,23 @@ th {
 <script>
 async function loadDashboard() {
     try {
-        const response = await fetch('/api/survey/summary');
+        const response = await fetch('/api/admin/metrics', {
+            headers: {
+                'X-API-Key': 'dev-admin-key'
+            }
+        });
         const data = await response.json();
         
         // Update metrics
-        document.getElementById('m-total').textContent = data.total || 0;
-        document.getElementById('m-avg').textContent = data.overall_average ? `${data.overall_average.toFixed(1)}%` : '-';
-        document.getElementById('m-channels').textContent = data.unique_channels || 0;
+        document.getElementById('m-total').textContent = data.total_submissions || 0;
+        document.getElementById('m-avg').textContent = data.average_score ? `${(data.average_score * 100).toFixed(1)}%` : '-';
+        document.getElementById('m-channels').textContent = data.active_channels || 0;
         
         // Update section scores
-        updateSectionScores(data.section_scores || {});
+        updateSectionScores(data.section_breakdown || {});
         
         // Update channel breakdown
-        updateChannelBreakdown(data.channel_summary || {});
+        updateChannelBreakdown(data.channel_breakdown || {});
         
         // Load recent submissions
         loadSubmissions();
@@ -337,7 +341,7 @@ function updateChannelBreakdown(channelSummary) {
         channelElement.className = 'channel-item';
         channelElement.innerHTML = `
             <div class="channel-name">${channel}</div>
-            <div class="channel-score">${data.average.toFixed(1)}%</div>
+            <div class="channel-score">${(data.avg_score * 100).toFixed(1)}%</div>
             <small>${data.count} submissions</small>
         `;
         container.appendChild(channelElement);
@@ -346,7 +350,11 @@ function updateChannelBreakdown(channelSummary) {
 
 async function loadSubmissions() {
     try {
-        const response = await fetch('/api/survey/submissions');
+        const response = await fetch('/api/admin/submissions', {
+            headers: {
+                'X-API-Key': 'dev-admin-key'
+            }
+        });
         const submissions = await response.json();
         
         const tbody = document.querySelector('#subs tbody');
@@ -354,14 +362,14 @@ async function loadSubmissions() {
         
         submissions.slice(0, 10).forEach(sub => {
             const row = document.createElement('tr');
-            const visitDate = new Date(sub.visit_date).toLocaleDateString();
-            const overallScore = sub.overall_score ? `${sub.overall_score.toFixed(1)}%` : 'N/A';
+            const visitDate = new Date(sub.visit_datetime).toLocaleDateString();
+            const overallScore = sub.overall_score ? `${(sub.overall_score * 100).toFixed(1)}%` : 'N/A';
             
             row.innerHTML = `
                 <td>${sub.id}</td>
                 <td><span class="pill">${sub.channel}</span></td>
-                <td>${sub.location}</td>
-                <td>${sub.shopper_name}</td>
+                <td>${sub.location_code}</td>
+                <td>${sub.shopper_id}</td>
                 <td>${visitDate}</td>
                 <td>${overallScore}</td>
                 <td><button class="btn-small" onclick="showDetails(${sub.id})">Details</button></td>
@@ -376,7 +384,11 @@ async function loadSubmissions() {
 
 async function showDetails(submissionId) {
     try {
-        const response = await fetch(`/api/survey/submissions/${submissionId}/detailed-score`);
+        const response = await fetch(`/api/admin/submissions/${submissionId}/scores`, {
+            headers: {
+                'X-API-Key': 'dev-admin-key'
+            }
+        });
         const details = await response.json();
         
         const modalBody = document.getElementById('modalBody');

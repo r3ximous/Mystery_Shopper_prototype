@@ -39,7 +39,7 @@ async function handleSubmit(event) {
     try {
         resultBox.textContent = 'Submitting...';
         
-        const response = await fetch('/api/submit-survey', {
+        const response = await fetch('/api/survey/submit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

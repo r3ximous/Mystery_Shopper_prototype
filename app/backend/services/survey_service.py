@@ -190,26 +190,31 @@ def calculate_section_scores(submission: SurveySubmissionOut) -> Dict[str, Any]:
     }
 
 def basic_metrics() -> Dict[str, Any]:
+    """Calculate and return basic metrics for the dashboard"""
     if not _DB:
-        return {"total": 0, "avg_score": None, "channel_breakdown": {}, "section_breakdown": {}}
+        return {
+            "total_submissions": 0, 
+            "average_score": 0, 
+            "active_channels": 0,
+            "channel_breakdown": {}, 
+            "section_breakdown": {}
+        }
     
     # Calculate individual submission scores
     submission_scores = []
     channel_scores: Dict[str, list] = {}
+    channel_counts: Dict[str, int] = {}
     section_aggregates = {}
     
     for sub in _DB:
         # Calculate weighted section scores
         score_data = calculate_section_scores(sub)
-        submission_scores.append({
-            'id': sub.id,
-            'channel': sub.channel,
-            'overall_score': score_data['overall_score'],
-            'section_scores': score_data['section_scores']
-        })
+        overall_score = score_data['overall_score']
+        submission_scores.append(overall_score)
         
         # Group by channel
-        channel_scores.setdefault(sub.channel, []).append(score_data['overall_score'])
+        channel_scores.setdefault(sub.channel, []).append(overall_score)
+        channel_counts[sub.channel] = channel_counts.get(sub.channel, 0) + 1
         
         # Aggregate section scores
         for section, data in score_data['section_scores'].items():
@@ -218,15 +223,25 @@ def basic_metrics() -> Dict[str, Any]:
             section_aggregates[section].append(data['score'])
     
     # Calculate averages
-    overall_avg = sum(s['overall_score'] for s in submission_scores) / len(submission_scores)
-    channel_breakdown = {ch: round(sum(vals)/len(vals), 4) for ch, vals in channel_scores.items()}
-    section_breakdown = {section: round(sum(scores)/len(scores), 4) for section, scores in section_aggregates.items()}
+    overall_avg = sum(submission_scores) / len(submission_scores)
+    
+    # Channel breakdown with counts and averages
+    channel_breakdown = {}
+    for channel, scores in channel_scores.items():
+        channel_breakdown[channel] = {
+            'count': channel_counts[channel],
+            'avg_score': round(sum(scores)/len(scores), 2)
+        }
+    
+    section_breakdown = {
+        section: round(sum(scores)/len(scores), 2) 
+        for section, scores in section_aggregates.items()
+    }
     
     return {
-        "total": len(_DB),
-        "avg_score": round(overall_avg, 4),
+        "total_submissions": len(_DB),
+        "average_score": round(overall_avg, 2),
+        "active_channels": len(channel_breakdown),
         "channel_breakdown": channel_breakdown,
-        "section_breakdown": section_breakdown,
-        "section_weights": {k: v['weight'] for k, v in SECTION_WEIGHTS.items()},
-        "detailed_scores": submission_scores[-10:]  # Last 10 submissions with details
+        "section_breakdown": section_breakdown
     }

@@ -70,3 +70,27 @@ async def simple_survey_page(request: Request):
 @frontend.get("/admin", response_class=HTMLResponse)
 async def admin_page(request: Request):
     return templates.TemplateResponse("admin_dashboard.html", {"request": request})
+
+@frontend.post("/api/submit-survey")
+async def submit_survey_frontend(request: Request):
+    """Frontend endpoint that forwards to backend survey submission"""
+    from fastapi import HTTPException
+    
+    try:
+        # Get the request body
+        body = await request.json()
+        
+        # Forward to the backend API
+        from ..backend.schemas.survey import SurveySubmissionIn
+        from ..backend.services.survey_service import save_submission
+        
+        # Validate and process the submission
+        submission_data = SurveySubmissionIn(**body)
+        result = save_submission(submission_data)
+        
+        return result
+        
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

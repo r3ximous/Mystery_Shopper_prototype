@@ -8,7 +8,30 @@ router = APIRouter()
 
 @router.get("/submissions")
 async def get_submissions(_: bool = Depends(get_admin_auth)):
-    return list_submissions()
+    """Get all submissions with calculated scores for admin dashboard"""
+    from ..services.survey_service import _DB, calculate_section_scores
+    
+    # Convert raw submissions to admin format with calculated scores
+    admin_submissions = []
+    for submission in _DB:
+        score_data = calculate_section_scores(submission)
+        admin_submission = {
+            "id": submission.id,
+            "channel": submission.channel,
+            "location_code": submission.location_code,
+            "shopper_id": submission.shopper_id,
+            "visit_datetime": submission.visit_datetime.isoformat(),
+            "created_at": submission.created_at.isoformat(),
+            "overall_score": score_data['overall_score'],
+            "scores": [{"question_id": s.question_id, "score": s.score, "comment": s.comment} for s in submission.scores],
+            "latency_samples": [{"question_id": ls.question_id, "ms": ls.ms} for ls in submission.latency_samples] if submission.latency_samples else [],
+            "section_scores": score_data['section_scores']
+        }
+        admin_submissions.append(admin_submission)
+    
+    # Sort by most recent first
+    admin_submissions.sort(key=lambda x: x["created_at"], reverse=True)
+    return admin_submissions
 
 @router.get("/metrics")
 async def get_metrics(_: bool = Depends(get_admin_auth)):
