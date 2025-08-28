@@ -10,8 +10,8 @@ from typing import List, Dict, Any
 import sys
 import os
 
-# Add the parent directory to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+# Add the parent directories to the path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 
 from app.backend.services.survey_service import save_submission, _DB, _COUNTER
 from app.backend.schemas.survey import SurveySubmissionIn, QuestionScore, LatencySample
