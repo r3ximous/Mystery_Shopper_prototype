@@ -7,8 +7,9 @@ import sys
 import os
 from datetime import datetime
 
-# Add the app directory to path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
+# Add the project root directory to path (go up 3 levels from tests/)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+sys.path.insert(0, project_root)
 
 from app.backend.schemas.survey import SurveySubmissionIn, QuestionScore, LatencySample
 from app.backend.services.survey_service import save_submission, list_submissions, basic_metrics

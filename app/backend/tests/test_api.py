@@ -1,5 +1,12 @@
+import sys
+import os
 import pytest
 from httpx import AsyncClient
+
+# Add the project root directory to path (go up 3 levels from tests/)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+sys.path.insert(0, project_root)
+
 from app.backend.main import app
 
 @pytest.mark.asyncio

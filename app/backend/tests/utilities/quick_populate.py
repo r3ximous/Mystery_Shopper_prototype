@@ -8,8 +8,9 @@ import os
 import random
 from datetime import datetime, timedelta
 
-# Add the backend path
-sys.path.append(os.path.dirname(__file__))
+# Add the project root directory to path (go up 4 levels from utilities/)
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
+sys.path.insert(0, project_root)
 
 try:
     from app.backend.services.survey_service import save_submission, list_submissions

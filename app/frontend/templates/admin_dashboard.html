@@ -384,39 +384,132 @@ async function loadSubmissions() {
 
 async function showDetails(submissionId) {
     try {
-        const response = await fetch(`/api/admin/submissions/${submissionId}/scores`, {
+        // First get the submission basic info
+        const submissionsResponse = await fetch('/api/admin/submissions', {
             headers: {
                 'X-API-Key': 'dev-admin-key'
             }
         });
-        const details = await response.json();
+        const submissions = await submissionsResponse.json();
+        const submission = submissions.find(sub => sub.id === submissionId);
+        
+        if (!submission) {
+            console.error('Submission not found');
+            return;
+        }
+        
+        // Then get the detailed scores
+        const scoresResponse = await fetch(`/api/admin/submissions/${submissionId}/scores`, {
+            headers: {
+                'X-API-Key': 'dev-admin-key'
+            }
+        });
+        const details = await scoresResponse.json();
         
         const modalBody = document.getElementById('modalBody');
-        modalBody.innerHTML = `
-            <h4>Submission ID: ${submissionId}</h4>
-            <p><strong>Overall Score:</strong> ${details.overall_score.toFixed(1)}%</p>
-            <p><strong>Visit Date:</strong> ${new Date(details.visit_date).toLocaleDateString()}</p>
-            <p><strong>Channel:</strong> ${details.channel}</p>
-            <p><strong>Location:</strong> ${details.location}</p>
-            <p><strong>Shopper:</strong> ${details.shopper_name}</p>
-            
-            <h4>Section Breakdown:</h4>
-            <div class="section-scores">
-                ${Object.entries(details.section_scores).map(([section, score]) => `
-                    <div class="section-item">
-                        <div class="section-name">
-                            <span>${section}</span>
-                            <span class="section-weight">${score.toFixed(1)}%</span>
+        
+        // Format the individual question scores
+        let individualScoresHtml = '';
+        if (submission.scores && submission.scores.length > 0) {
+            individualScoresHtml = `
+                <h4 style="margin-top: 1.5rem;">Individual Question Scores</h4>
+                <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.5rem;">
+                    <table style="width: 100%; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="background: var(--bg-alt);">
+                                <th style="padding: 0.5rem;">Question ID</th>
+                                <th style="padding: 0.5rem;">Score</th>
+                                <th style="padding: 0.5rem;">Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${submission.scores.map(score => `
+                                <tr>
+                                    <td style="padding: 0.5rem;">${score.question_id}</td>
+                                    <td style="padding: 0.5rem;">${score.score}/5</td>
+                                    <td style="padding: 0.5rem; max-width: 200px; word-wrap: break-word;">
+                                        ${score.comment || '<em style="color: var(--text-dim);">No comment</em>'}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+        
+        // Format latency samples if available
+        let latencyHtml = '';
+        if (submission.latency_samples && submission.latency_samples.length > 0) {
+            latencyHtml = `
+                <h4 style="margin-top: 1.5rem;">Voice Usage Data</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem;">
+                    ${submission.latency_samples.map(sample => `
+                        <div style="padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius-sm); text-align: center;">
+                            <strong>${sample.question_id}</strong><br>
+                            <span style="color: var(--accent);">${Math.round(sample.ms)}ms</span>
                         </div>
-                    </div>
-                `).join('')}
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        modalBody.innerHTML = `
+            <div style="margin-bottom: 1.5rem;">
+                <h4>Submission ID: ${submissionId}</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                    <div><strong>Overall Score:</strong> ${(details.overall_score * 100).toFixed(1)}%</div>
+                    <div><strong>Visit Date:</strong> ${new Date(submission.visit_datetime).toLocaleDateString()}</div>
+                    <div><strong>Channel:</strong> <span class="pill">${submission.channel}</span></div>
+                    <div><strong>Location:</strong> ${submission.location_code}</div>
+                    <div><strong>Shopper:</strong> ${submission.shopper_id}</div>
+                    <div><strong>Total Questions:</strong> ${submission.scores ? submission.scores.length : 0}</div>
+                </div>
             </div>
+            
+            <h4>Section Performance Breakdown</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                ${Object.entries(details.section_scores).map(([section, data]) => {
+                    const percentage = (data.score * 100).toFixed(1);
+                    const weightPercent = (data.weight * 100).toFixed(0);
+                    const questionsAnswered = data.raw_total > 0 ? data.raw_total : 0;
+                    const maxPossible = data.raw_max;
+                    
+                    return `
+                        <div style="padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-alt);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <strong>${section}</strong>
+                                <span style="color: var(--text-dim); font-size: 0.9rem;">Weight: ${weightPercent}%</span>
+                            </div>
+                            <div style="background: var(--border); height: 8px; border-radius: var(--radius-sm); margin: 0.5rem 0; overflow: hidden;">
+                                <div style="height: 100%; background: var(--accent-grad); width: ${percentage}%; transition: width 0.3s ease;"></div>
+                            </div>
+                            <div style="font-size: 0.9rem; color: var(--text-dim); display: flex; justify-content: space-between;">
+                                <span>Score: ${percentage}%</span>
+                                <span>Questions: ${data.questions_count} (${questionsAnswered} answered)</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            
+            ${individualScoresHtml}
+            ${latencyHtml}
         `;
         
         document.getElementById('scoreModal').style.display = 'block';
         
     } catch (error) {
         console.error('Error loading submission details:', error);
+        const modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = `
+            <div style="color: var(--text-error, red); text-align: center; padding: 2rem;">
+                <h4>Error Loading Details</h4>
+                <p>Unable to load submission details. Please try again.</p>
+                <p style="font-size: 0.9rem; color: var(--text-dim);">Error: ${error.message}</p>
+            </div>
+        `;
+        document.getElementById('scoreModal').style.display = 'block';
     }
 }
 
